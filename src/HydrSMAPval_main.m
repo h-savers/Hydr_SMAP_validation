@@ -60,14 +60,14 @@ end
 % *********   Init reading Auxiliary files
 %
 try
-startDate = datetime(init_SM_Day, 'InputFormat', 'yyyy-MM-dd''T''HH:mm') ;
+startDate = datetime(init_SM_Day, 'InputFormat', 'yyyy-MM-dd''T''HH:mm', 'Format',['yyyy-MM-dd' ' ' 'HH:mm']) ;
 % startDate = datetime(init_SM_Day, 'InputFormat', 'yyyy-MM-dd') ;
 catch
         throw(MException('INPUT:ERROR', "Wrong start date format. Please check the command line and try again."))
 end
 %
 try
-endDate = datetime(final_SM_Day, 'InputFormat', 'yyyy-MM-dd''T''HH:mm') ;
+endDate = datetime(final_SM_Day, 'InputFormat', 'yyyy-MM-dd''T''HH:mm', 'Format',['yyyy-MM-dd' ' ' 'HH:mm']) ;
 % endDate = datetime(final_SM_Day, 'InputFormat', 'yyyy-MM-dd') ;
 catch
         throw(MException('INPUT:ERROR', "Wrong end date format. Please check the command line and try again."))
@@ -75,8 +75,8 @@ end
 %
 %%%%%%% Identify L2OP_SSM product folders in the PDGS
 
-endDate=endDate+hours(3) ; % Needed since the six hour block H00 starts on the previous day at 21:00:00
-startDate=startDate+hours(3) ;
+% endDate=endDate+hours(3) ; % Needed since the six hour block H00 starts on the previous day at 21:00:00
+% startDate=startDate+hours(3) ;
 numdays=ceil(juliandate(endDate)-juliandate(startDate)+1) ; %devo mettere +1 ???????
 
 %%%% find out HydroGNSS file folder and names for the specified time frame
