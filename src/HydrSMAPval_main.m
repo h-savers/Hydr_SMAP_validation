@@ -139,7 +139,7 @@ end
 %
 logfile= datetime('now','Format','yyyyMMdd_HHmmss') ; 
 logfile=char(logfile) ;
-namelogfile=['QCout_' logfile '.log'] ; 
+namelogfile=['ValidationOut_' logfile '.log'] ; 
 logfileID = fopen([char(LogsOutputRootPath) '\' namelogfile], 'a+') ; 
 %
 %%%%%%% End open log file
