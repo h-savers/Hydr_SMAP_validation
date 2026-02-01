@@ -30,39 +30,89 @@ SMAPfolderOK(ii,2)=string([char(DynamicAuxiliarySMAPRootPath) '\' char(string(ty
 SMAPfolderOK(ii,3)=string([char(DynamicAuxiliarySMAPRootPath) '\' char(string(tyear3)) '\' char(string(tmonth3)) '\' char(string(tday3)) '\']) ;
 
     if exist(SMAPfolderOK(ii,1))~=0 % HydroLat0  ;
-    % daySMAP=daySMAP+1 ; 
     content=dir(SMAPfolderOK(ii,1))  ;
-    SMAPfileOK(ii,1)=string(content(3).name) ; 
-        if contains(SMAPfileOK(ii,1),"SMAP_L3_SM_P_")==1 ;
-        SMAPfileOK(ii,1)=string(content(3).name) ; 
-        dayOKwithSMAP(ii)=ii ; 
-        else, throw(MException('INPUT:ERROR', "SMAP file non available in existing folder. Program exiting.")) ;
+        if length(content)<3
+            disp(['Day ' char(string(ii)) ': SMAP file non available in existing folder ' char(SMAPfolderOK(ii,1)) '.']) ;
+            SMAPfolderOK(ii,1)=NaN ; SMAPfileOK(ii,1)=NaN ;
+        else   
+            SMAPfileOK(ii,1)=string(content(3).name) ; 
+            if contains(SMAPfileOK(ii,1),"SMAP_L3_SM_P_")==0
+               disp([char(SMAPfileOK(ii,1)) ' in existing folder is not a SMAP file.']) ;
+               SMAPfolderOK(ii,1)=NaN ; SMAPfileOK(ii,1)=NaN ;
+            else
+            SMAPfileOK(ii,1)=string(content(3).name) ; 
+            dayOKwithSMAP(ii)=ii ; 
+            end
         end
-    else SMAPfolderOK(ii,1)=NaN ; SMAPfileOK(ii,1)=NaN ; 
+    else
+    disp(['SMAP folder ' SMAPfolderOK(ii,1) 'non available']) ;
+    SMAPfolderOK(ii,1)=NaN ; SMAPfileOK(ii,1)=NaN ;
     end
-    if  exist(SMAPfolderOK(ii,2))~=0;
+
+    if exist(SMAPfolderOK(ii,2))~=0 % HydroLat0  ;
     content=dir(SMAPfolderOK(ii,2))  ;
-    SMAPfileOK(ii,2)=string(content(3).name) ; 
-
-        if contains(SMAPfileOK(ii,2),"SMAP_L3_SM_P_")==1 ; 
-        SMAPfileOK(ii,2)=content(3).name ; 
-        dayOKwithSMAP(ii)=ii ; 
-        else,  throw(MException('INPUT:ERROR', "SMAP file non available in existing folder. Program exiting.")) ;
+        if length(content)<3
+            disp(['Day ' char(string(ii)) ': SMAP file non available in existing folder ' char(SMAPfolderOK(ii,2)) '.']) ;
+            SMAPfolderOK(ii,2)=NaN ; SMAPfileOK(ii,2)=NaN ;
+        else   
+            SMAPfileOK(ii,2)=string(content(3).name) ; 
+            if contains(SMAPfileOK(ii,2),"SMAP_L3_SM_P_")==0
+               disp([char(SMAPfileOK(ii,2)) ' in existing folder is not a SMAP file.']) ;
+               SMAPfolderOK(ii,2)=NaN ; SMAPfileOK(ii,2)=NaN ; dayOKwithSMAP(ii)=0 ; 
+            else
+            SMAPfileOK(ii,2)=string(content(3).name) ; 
+            dayOKwithSMAP(ii)=ii ; 
+            end
         end
-    else SMAPfolderOK(ii,2)=NaN ; SMAPfileOK(ii,2)=NaN ; 
+    else
+    disp(['SMAP folder ' SMAPfolderOK(ii,2) 'non available']) ;
+    SMAPfolderOK(ii,2)=NaN ; SMAPfileOK(ii,2)=NaN ; dayOKwithSMAP(ii)=0 ; 
     end
 
-    if  exist(SMAPfolderOK(ii,3))~=0;
+    if exist(SMAPfolderOK(ii,3))~=0 % HydroLat0  ;
     content=dir(SMAPfolderOK(ii,3))  ;
-    SMAPfileOK(ii,3)=string(content(3).name) ; 
-
-        if contains(SMAPfileOK(ii,3),"SMAP_L3_SM_P_")==1 ; 
-        SMAPfileOK(ii,3)=content(3).name ; 
-        dayOKwithSMAP(ii)=ii ; 
-        else,  throw(MException('INPUT:ERROR', "SMAP file non available in existing folder. Program exiting.")) ;
+        if length(content)<3
+            disp(['Day ' char(string(ii)) ': SMAP file non available in existing folder ' char(SMAPfolderOK(ii,3)) '.']) ;
+            SMAPfolderOK(ii,3)=NaN ; SMAPfileOK(ii,3)=NaN ;
+        else   
+            SMAPfileOK(ii,3)=string(content(3).name) ; 
+            if contains(SMAPfileOK(ii,3),"SMAP_L3_SM_P_")==0
+               disp([char(SMAPfileOK(ii,3)) ' in existing folder is not a SMAP file.']) ;
+               SMAPfolderOK(ii,3)=NaN ; SMAPfileOK(ii,3)=NaN ;
+            else
+            SMAPfileOK(ii,3)=string(content(3).name) ; 
+            dayOKwithSMAP(ii)=ii ; 
+            end
         end
-    else SMAPfolderOK(ii,3)=NaN ; SMAPfileOK(ii,3)=NaN ; 
+    else
+    disp(['SMAP folder ' SMAPfolderOK(ii,3) 'non available']) ;
+    SMAPfolderOK(ii,3)=NaN ; SMAPfileOK(ii,3)=NaN ;
     end
+
+    
+    % if  exist(SMAPfolderOK(ii,2))~=0 ;
+    % content=dir(SMAPfolderOK(ii,2))  ;
+    % SMAPfileOK(ii,2)=string(content(3).name) ; 
+    % 
+    %     if contains(SMAPfileOK(ii,2),"SMAP_L3_SM_P_")==1 ; 
+    %     SMAPfileOK(ii,2)=content(3).name ; 
+    %     dayOKwithSMAP(ii)=ii ; 
+    %     else,  throw(MException('INPUT:ERROR', "SMAP file non available in existing folder. Program exiting.")) ;
+    %     end
+    % else SMAPfolderOK(ii,2)=NaN ; SMAPfileOK(ii,2)=NaN ; 
+    % end
+    % 
+    % if  exist(SMAPfolderOK(ii,3))~=0;
+    % content=dir(SMAPfolderOK(ii,3))  ;
+    % SMAPfileOK(ii,3)=string(content(3).name) ; 
+    % 
+    %     if contains(SMAPfileOK(ii,3),"SMAP_L3_SM_P_")==1 ; 
+    %     SMAPfileOK(ii,3)=content(3).name ; 
+    %     dayOKwithSMAP(ii)=ii ; 
+    %     else,  throw(MException('INPUT:ERROR', "SMAP file non available in existing folder. Program exiting.")) ;
+    %     end
+    % else SMAPfolderOK(ii,3)=NaN ; SMAPfileOK(ii,3)=NaN ; 
+    % end
 
 end
 

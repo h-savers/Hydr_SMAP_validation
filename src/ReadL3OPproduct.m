@@ -1,0 +1,100 @@
+% close all
+function L3OPdata=ReadL3OPproduct(filefolder, filename, ProductLevel)
+% path='E:\Work\HydroGNSS_PhCDE\SML2OPbeta\Outputs\HydroGNSS-1\DataRelease\L2OP-SSM\2018-08\18\H06\' ; 
+% filename='L2OP-SSM.nc.1750257755.336' ; 
+% filename='L2OP-SSM.nc' ; 
+% global L2OPdata
+% info=ncinfo([path filename]) ; 
+%
+% NumberOfTracks=ncreadatt([filepath filename],'/','NumberOfTracks') ; 
+%
+ncid = netcdf.open([filefolder filename], 'NC_NOWRITE');
+mapNcids = netcdf.inqGrps(ncid);
+[a b]=size(mapNcids) ; 
+NumberOfmaps=b ; 
+%
+% for itrk=1:NumberOfTracks ;
+% % [a b c]=info.Groups(itrk).Dimensions.Length ; 
+% NumOfSP(itrk)=a ; 
+% end
+% maxsize=max(NumOfSP) ; 
+% SoilMoisture=nan(maxsize, NumberOfTracks) ; 
+SoilMoisture=[] ;
+DataLatitude=SoilMoisture ; 
+DataLongitude=SoilMoisture ;
+SSMQuality=[] ;
+
+for itrk=1:NumberOfmaps ;
+% group=char(string(itrk-1)) ; 
+% if itrk <= 10, group=['00000' group] ; end;
+% if itrk > 10 & itrk <= 100, group=['0000' group] ; end;
+% if itrk > 100 & itrk <= 100 , group=['000' group] ; end;
+% if itrk > 1000, itrk <= 1000, group=['00' group] ; end;
+% if itrk > 10000, group=['0' group] ; end;
+% 
+% a=NumOfSP(itrk) ; 
+
+
+varID=netcdf.inqVarID(mapNcids(itrk), 'SoilMoisture')  ;
+read=netcdf.getVar(mapNcids(itrk),varID)  ;
+[a b]=size(read) ; 
+SoilMoisture(1:a,itrk)=read ; 
+
+varID=netcdf.inqVarID(mapNcids(itrk), 'DataMeanLatitude')  ;
+read=netcdf.getVar(mapNcids(itrk),varID)  ;
+DataMeanLatitude(1:a,itrk)=read ; 
+
+varID=netcdf.inqVarID(mapNcids(itrk), 'DataMeanLongitude')  ;
+read=netcdf.getVar(mapNcids(itrk),varID)  ;
+DataMeanLongitude(1:a,itrk)=read ; 
+
+varID=netcdf.inqVarID(mapNcids(itrk), 'QualityFlag')  ;
+read=netcdf.getVar(mapNcids(itrk),varID)  ;
+QualityFlag(1:a,itrk)=read ; 
+
+varID=netcdf.inqVarID(mapNcids(itrk), 'MeanObservationUTCTime')  ;
+read=netcdf.getVar(mapNcids(itrk),varID)  ;
+MeanObservationUTCTime(1:a,itrk)=read ; 
+
+varID=netcdf.inqVarID(mapNcids(itrk), 'SoilMoistureMap')  ;
+read=netcdf.getVar(mapNcids(itrk),varID)  ;
+[a b]=size(read) ; 
+SoilMoistureMap(1:a,1:b,itrk)=read ;
+TopLeftColumn(itrk) = netcdf.getAtt(mapNcids(itrk),netcdf.getConstant("NC_GLOBAL"),'TopLeftColumn') ; 
+TopLeftRow(itrk) = netcdf.getAtt(mapNcids(itrk),netcdf.getConstant("NC_GLOBAL"),'TopLeftRow') ; 
+
+% SoilMoisture(1:a,itrk)=ncread([filepath filename],['/' group '/','SoilMoisture'] ) ; 
+% DataLatitude(1:a,itrk)=ncread([filepath filename],['/' group '/','DataLatitude'] ) ; 
+% DataLongitude(1:a,itrk)=ncread([filepath filename],['/' group '/','DataLongitude'] ) ; 
+% SSMQuality(1:a,itrk)=ncread([filepath filename],['/' group '/','SSMQuality'] ) ; 
+% SoilMoist(itrk).map=ncread([filepath filename],['/' group '/','SoilMoistureMap'] ) ; 
+% ObservationUTCMidPointTime(1:a,itrk)=ncread([filepath filename],['/' group '/','ObservationUTCMidPointTime'] ) ; 
+
+
+% SoilMoisture(a+1:end,itrk)=NaN ; 
+% DataLatitude(a+1:end,itrk)=NaN ;  
+% DataLongitude(a+1:end,itrk)=NaN ;
+% ObservationUTCMidPointTime(a+1:end,itrk)=NaN ;
+
+
+% SSMQuality(a+1:end,itrk)=NaN ;
+
+% find(isnan(SoilMoisture)==0)
+end
+L3OPdata.SoilMoisture=SoilMoisture ; 
+L3OPdata.DataLatitude=DataMeanLatitude ; 
+L3OPdata.DataLongitude=DataMeanLongitude ; 
+L3OPdata.SoilMoisture=SoilMoisture ; 
+L3OPdata.SoilMoistureMap=SoilMoistureMap ; 
+L3OPdata.TopLeftColumn=TopLeftColumn ; 
+L3OPdata.TopLeftRow=TopLeftRow ; 
+L3OPdata.ObservationUTCMidPointTime=MeanObservationUTCTime ; 
+L3OPdata.SSMQuality=QualityFlag ; 
+% 
+% tiledlayout('flow')
+% nexttile
+% geoscatter(DataLatitude(:),DataLongitude(:),[], SoilMoisture(:) )
+
+end
+
+

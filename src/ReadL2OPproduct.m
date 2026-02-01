@@ -60,6 +60,8 @@ varID=netcdf.inqVarID(trackNcids(itrk), 'SoilMoistureMap')  ;
 read=netcdf.getVar(trackNcids(itrk),varID)  ;
 [a b]=size(read) ; 
 SoilMoistureMap(1:a,1:b,itrk)=read ;
+TopLeftColumn(itrk) = netcdf.getAtt(trackNcids(itrk),netcdf.getConstant("NC_GLOBAL"),'TopLeftColumn') ; 
+TopLeftRow(itrk) = netcdf.getAtt(trackNcids(itrk),netcdf.getConstant("NC_GLOBAL"),'TopLeftRow') ; 
 
 % SoilMoisture(1:a,itrk)=ncread([filepath filename],['/' group '/','SoilMoisture'] ) ; 
 % DataLatitude(1:a,itrk)=ncread([filepath filename],['/' group '/','DataLatitude'] ) ; 
@@ -84,6 +86,8 @@ L2OPdata.DataLatitude=DataLatitude ;
 L2OPdata.DataLongitude=DataLongitude ; 
 L2OPdata.SoilMoisture=SoilMoisture ; 
 L2OPdata.map.SoilMoist=SoilMoistureMap ; 
+L2OPdata.TopLeftColumn=TopLeftColumn ; 
+L2OPdata.TopLeftRow=TopLeftRow ; 
 L2OPdata.ObservationUTCMidPointTime=ObservationUTCMidPointTime ; 
 L2OPdata.SSMQuality=SSMQuality ; 
 % 

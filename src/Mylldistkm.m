@@ -1,4 +1,5 @@
-function [d1km d2km]=Mylldistkm(latlon1,latlon2)
+function d1km=Mylldistkm(latlon1,latlon2) 
+%function [d1km d2km]=Mylldistkm(latlon1,latlon2)
 % format: [d1km d2km]=lldistkm(latlon1,latlon2)
 % Distance:
 % d1km: distance in km based on Haversine formula
@@ -52,20 +53,30 @@ lat2all=repmat(latlon2(1,:), size1,1) ;
 
 lon1all=repmat(latlon1(2,:)', 1,size2) ;
 lon2all=repmat(latlon2(2,:), size1,1) ; 
+clear latlon1  latlon2
 
+% deltaLat=lat2all-lat1all;
+% deltaLon=lon2all-lon1all;
+% clear lon1all  lon2all 
 
-deltaLat=lat2all-lat1all;
-deltaLon=lon2all-lon1all;
+% lon1all=lat2all-lat1all;
+% lon2all=lon2all-;
 
-clear latlon1  latlon2 lon1all  lon2all 
-a=sin((deltaLat)/2).^2 + cos(lat1all).*cos(lat2all).* sin(deltaLon/2).^2;
-clear deltaLat lat1all lat2all deltaLon 
-c=2.*atan2(sqrt(a),sqrt(1-a));
-clear a 
-d1km=radius.*c;    %Haversine distance
-clear c
+% a=sin((deltaLat)/2).^2 + cos(lat1all).*cos(lat2all).* sin(deltaLon/2).^2;
+lat1all=sin((lat2all-lat1all)/2).^2 + cos(lat1all).*cos(lat2all).* sin((lon2all-lon1all)/2).^2;
+
+% clear deltaLat lat1all lat2all deltaLon 
+clear lon1all lat2all lon2all 
+
+%c=2.*atan2(sqrt(a),sqrt(1-a));
+lat1all(lat1all<0)=0 ;  lat1all(lat1all>1)=1 ; 
+lat1all=2.*atan2(sqrt(lat1all),sqrt(1-lat1all));
+
+% clear a 
+d1km=radius.*lat1all;    %Haversine distance
+clear lat1all
 %%% remove second method
-d2km=0 ; 
+% d2km=0 ; 
 % x=deltaLon.*cos((lat1all+lat2all)./2);
 % % y=deltaLat;
 % clear lat1all lat2all 
