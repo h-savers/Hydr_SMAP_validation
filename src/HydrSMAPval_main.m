@@ -43,11 +43,11 @@ switch mode
 Answer{1}= char(init_SM_Day) ;                           Answer{13}= char(DynamicAuxiliarySMOSRootPath) ;
 Answer{2}= char(final_SM_Day)  ;                         Answer{14}= char(LogsOutputRootPath) ;
 Answer{3}= char(RefSatellite)  ;                         Answer{15}= char(ReportFolder) ;
-Answer{4}= char(ProductLevel)  ;                         Answer{16}= char(string(ThresholDist)) ;
-Answer{5}= char(ProcessingSatellite)  ;                  Answer{17}= char(string(ThresholdTimeDelay)) ;
-Answer{6}= char(savespace)  ;                            Answer{18}= char(string(ThrSameTime)) ;
-Answer{7}= char(string(sizesave))  ;                     Answer{19}= char(string(ThrSameDist)) ;
-Answer{8}= char(SMAPQC)  ;                               Answer{20}= char(string(Threshold09Dist)) ;
+Answer{4}= char(ProductLevel)  ;                         Answer{18}= char(string(ThresholDist)) ;
+Answer{5}= char(ProcessingSatellite)  ;                  Answer{16}= char(string(ThresholdTimeDelay)) ;
+Answer{6}= char(savespace)  ;                            Answer{17}= char(string(ThrSameTime)) ;
+Answer{7}= char(string(sizesave))  ;                     Answer{20}= char(string(ThrSameDist)) ;
+Answer{8}= char(SMAPQC)  ;                               Answer{19}= char(string(Threshold09Dist)) ;
 Answer{9}= char(MATfileFolder)  ;                        Answer{21}= char(string(Thr09SameDist)) ;                                         
 Answer{10}= char(DataInputRootPath)  ;                    
 Answer{11}= char(DynamicAuxiliarySMAPRootPath) ;  
@@ -85,8 +85,8 @@ numlines=[1 90; 1 90; 1 90; 1 90; 1 90; 1 90 ; 1 90; 1 90; 1 90; 1 90; 1 90; ...
 defaultanswer={Answer{1},Answer{2},...
                  Answer{3},Answer{4},Answer{5},Answer{6},Answer{7},...
                  Answer{8},Answer{9},Answer{10}, Answer{11},Answer{12} ...
-                 Answer{13},Answer{14},Answer{15}, Answer{17} ...
-                 Answer{18},Answer{16},Answer{20}, Answer{19},Answer{21} };
+                 Answer{13},Answer{14},Answer{15}, Answer{16} ...
+                 Answer{17},Answer{18},Answer{19}, Answer{20},Answer{21} };
 Answer=inputdlg(prompt,name,numlines,defaultanswer,opts);
 
 init_SM_Day= Answer{1};
@@ -104,11 +104,11 @@ DynamicAuxiliarySMAP09RootPath=Answer{12} ;
 DynamicAuxiliarySMOSRootPath=Answer{13} ;
 LogsOutputRootPath=Answer{14} ;
 ReportFolder=Answer{15} ;
-ThresholDist=str2num(Answer{17}) ;
-ThresholdTimeDelay=str2num(Answer{18}) ;
-ThrSameTime=str2num(Answer{16}) ;
-ThrSameDist=str2num(Answer{20}) ;
+ThresholdTimeDelay=str2num(Answer{16}) ;
+ThrSameTime=str2num(Answer{17}) ;
+ThresholDist=str2num(Answer{18}) ;
 Threshold09Dist=str2num(Answer{19}) ;
+ThrSameDist=str2num(Answer{20}) ;
 Thr09SameDist=str2num(Answer{21}) ;
 
 
@@ -356,10 +356,10 @@ SMAPTime(contains(SMAPTime, "N/A")==1)="NaT" ;  % needed as the first element of
 SMAPnonan=find(SMAPSoilMoisture ~= -9999 & isnan(SMAPSoilMoisture)==0 & datetime(SMAPTime) > min(datetime(HydroTime))- ThresholdTimeDelay/24 ...
     & datetime(SMAPTime) < max(datetime(HydroTime))+ ThresholdTimeDelay/24) ;
 
-if RefSatellite=="SMAP" &  SMAPQC=="Recommended" % This sis for SMAP data
+if (RefSatellite=="SMAP" | RefSatellite=="SMAP09") &  SMAPQC=="Recommended" % This sis for SMAP data
 goodRecommended=find(bitget(SMAPretrieval_qual_flag, 1)==0) ;
 SMAPnonan = intersect(SMAPnonan,goodRecommended) ; 
-elseif RefSatellite=="SMAP" &  SMAPQC=="Successfull" % This is for SMAP data
+elseif (RefSatellite=="SMAP" | RefSatellite=="SMAP09") &  SMAPQC=="Successfull" % This is for SMAP data
 goodSuccessfull=find(bitget(SMAPretrieval_qual_flag, 3)==0) ;
 SMAPnonan = intersect(SMAPnonan,goodSuccessfull) ; 
 elseif RefSatellite=="SMOS" & SMAPQC=="NonNominal"  % This sis for SMOS data
