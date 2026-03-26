@@ -152,7 +152,7 @@ logfileID = fopen([char(LogsOutputRootPath) '\' namelogfile], 'a+') ;
 % 
 
 % if ProductLevel~='L2G' & ProductLevel~='L3' 
-    if ProductLevel~='L2G' & ProductLevel~='L3' 
+    if string(ProductLevel)~="L2G" & string(ProductLevel)~="L3" 
 
         disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' ERROR: Wrong product level. Program exiting']) ; 
         % fprintf(1,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' ERROR: Wrong product level. Program exiting']) ; 
