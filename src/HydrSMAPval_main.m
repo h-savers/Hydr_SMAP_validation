@@ -393,11 +393,13 @@ waitbar(ii/dayOK-0.1,f);
 
 figure(vvvvv) ; nexttile ; geoscatter(SMAPLatitude, SMAPLongitude, [5] , 100.*SMAPSoilMoisture, 'filled')
 colorbar ; 
-if RefSatellite=="SMOS"
-    title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),' ')) ])
-else
-    title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),'T')) ])
-end
+% % if RefSatellite=="SMOS"
+% %     title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),' ')) ])
+% % else
+% %     title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),'T')) ])
+pos=find(char(SMAPfileOK(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMAPfileOK(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ]) ; 
+% % end
+
 mindist=[] ;
 mindelay=[] ; 
 e = referenceEllipsoid('WGS84') ;
@@ -509,14 +511,17 @@ PercNoColocation(ii)=100*size(find(isnan(HydroSMtoplot(ii,1:HydroPoints))==1),2)
 PercNoSaturations(ii)=100*size(find(HydroSMtoplot(ii,1:HydroPoints)==0 | HydroSMtoplot(ii,1:HydroPoints)==50),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 %
 end  % end look on number of days
-
+SMAPSMtoplot_perc=100.*SMAPSMtoplot ; 
+clear SMAPSMtoplot
+errorTOT=[] ; HydroSMtoplotTOT=[];  SMAPSMtoplot_percTOT=[] ;
 %%% computation and plot of figure with map of errors
 vvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 hold on
 ax1 = axes('Position',[0 0 1 1]); ax1.TickDir='out' ; 
 ax2 = axes('Position',[0.1 0.25 0.8 0.5]); 
 for ii=dayOKwithSMAP'
-error= SMAPSMtoplot(ii,1:HydroGNSSnumber(ii))- HydroSMtoplot(ii,1:HydroGNSSnumber(ii)) ; 
+error= SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii))- HydroSMtoplot(ii,1:HydroGNSSnumber(ii)) ; 
+errorTOT=[errorTOT error] ;
 noerrornan=find(isnan(error)==0) ; 
 error=error(noerrornan) ; 
 BIAS(ii)=mean(error) ; 
@@ -524,8 +529,10 @@ UbRMSE(ii)=std(error) ;
 RMSE(ii)=sqrt(UbRMSE(ii)^2+BIAS(ii)^2) ; 
 RMSE2(ii)=sqrt(mean(error.^2)) ; 
 pippo=HydroSMtoplot(ii,1:HydroGNSSnumber(ii)) ;
-pluto=SMAPSMtoplot(ii,1:HydroGNSSnumber(ii)) ; 
-% corrcoe(ii)=corrcoef(HydroSMtoplot(ii,1:HydroGNSSnumber(ii)), SMAPSMtoplot(ii,1:HydroGNSSnumber(ii))) ; 
+HydroSMtoplotTOT=[HydroSMtoplotTOT pippo] ; 
+pluto=SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii)) ; 
+SMAPSMtoplot_percTOT=[SMAPSMtoplot_percTOT pluto] ; 
+% corrcoe(ii)=corrcoef(HydroSMtoplot(ii,1:HydroGNSSnumber(ii)), SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii))) ; 
 R=corrcoef(pippo(noerrornan), pluto(noerrornan)) ; 
 corrcoe(ii)=R(1,2) ; 
 corrcoe2(ii)=mean((pippo(noerrornan)-mean(pippo(noerrornan))).*(pluto(noerrornan)-mean(pluto(noerrornan))))./std(pluto(noerrornan))/std(pippo(noerrornan)) ;
@@ -534,7 +541,8 @@ ax2=gca ;
 end
 clear SMAP
 
-colorbar('southoutside')
+c=colorbar('southoutside')
+c.Label.String = 'SSM error [%]';
 title('Map of SSM errors (Reference minus HydroGNSS) [%]')
 %%% end of computation and plot of figure with map of errors
 
@@ -545,7 +553,6 @@ report2(ii)=string(['Percentage of NaN in  HydroGNNS L2 product  = '       char(
 report3(ii)=string(['Percentage of HydroGNNS L2 product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
 report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS L2 Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
 report9(ii)=string(['Percentage of retrievals with optimal quality = '           char(string(round(PercSM_Flag1_good(ii),2))) ' %']) ;
-
 report5(ii)=string(['Root Mean Square Error  RMSE = '                      char(string(round(RMSE(ii),2))) ' %']) ;
 report6(ii)=string(['Unbiased Root Mean Square Error  UbRMSE = '           char(string(round(UbRMSE(ii),2))) ' %']) ;
 report7(ii)=string(['Bias = ' char(string(BIAS(ii))) ' %']) ;
@@ -553,6 +560,7 @@ report8(ii)=string(['Correlation coefficient R= '                      char(stri
 
 end
 
+%%%
 %legendtxt="" ; 
 for ii=dayOKwithSMAP'
 %pippo=string(['Day ' char(string(ii)) ': ' char(DateOK(ii)) '-' char(string(month(timeproduct_sixtot(ii,1)))) '-' char(string(year(timeproduct_sixtot(ii,1))))]) ; 
@@ -574,13 +582,13 @@ end
 %%% figure with overall scatterplot of HydroGNSS vs reference
 % vvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 vvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
-tt=tiledlayout(2,2) ; 
+tt=tiledlayout(4,1) ; 
 title(tt, ['Entire time period comparison with ' char(RefSatellite) ' reference'])
-nexttile([1 2])
+nexttile(1, [2 1])
 %  ax1 = axes('Position',[0 0 1 1]); ax1.TickDir='out' ; 
 %  ax2 = axes('Position',[0.2 0.15 0.7 0.6]); 
 for ii=dayOKwithSMAP'
-plot(100.*SMAPSMtoplot(ii,1:HydroGNSSnumber(ii)), HydroSMtoplot(ii,1:HydroGNSSnumber(ii)), '.') ; 
+plot(SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii)), HydroSMtoplot(ii,1:HydroGNSSnumber(ii)), '.') ; 
 hold on 
 end
 xlim([-5 55]) ;
@@ -590,21 +598,22 @@ ylabel(['HydroGNSS ' char(ProductLevel) ' Soil Moisture [%]'])
 xlabel([char(RefSatellite) ' L3 Soil Moisture [%]'])
 legend(legendtxt',"AutoUpdate","on", 'Location', 'eastoutside', 'FontSize', 12)
 
-
-figure(vvv), nexttile([ 3])
+figure(vvv), nexttile
 % ax1 = axes('Position',[0 0 1 1]); ax1.TickDir='out' ; 
 % ax2 = axes('Position',[0 0 0.3 0.3]); 
-plot(dayOKwithSMAP, RMSE, 'o')
+plot(dayOKwithSMAP, RMSE, 'o-')
 xlabel('Day of colocation count') ; ylabel('Soil Moisture RMSE [%]')
-xlim([dayOKwithSMAP(1)-1, dayOKwithSMAP(end)+1]) ;
+xlim([dayOKwithSMAP(1)-0.2, dayOKwithSMAP(end)+0.2]) ;
+xticks(dayOKwithSMAP) ; 
 ylim([round(min(RMSE), 0)-1, round(max(RMSE), 0)+1] );
 
-figure(vvv), nexttile([4])
+figure(vvv), nexttile
 % ax1 = axes('Position',[0 0 1 1]); ax1.TickDir='out' ; 
 % ax2 = axes('Position',[0 0 0.3 0.3]); 
 plot(dayOKwithSMAP, corrcoe, 'o')
-xlabel('Day of colocation count') ; ylabel('Soil Moisture correlation coefficient [%]')
-xlim([dayOKwithSMAP(1)-1, dayOKwithSMAP(end)+1]) ;
+xlabel('Day of colocation count') ; ylabel('Soil Moisture corr. coeff.')
+xlim([dayOKwithSMAP(1)-0.2, dayOKwithSMAP(end)+0.2]) ;
+xticks(dayOKwithSMAP) ;
 ylim([0, 1] );
 
 %%% end of figure with overall scatterplot of HydroGNSS vs reference
@@ -643,7 +652,7 @@ text(indent+7,vert,['\fontsize{10} ' report4(ii)])
 vert=vert-2 ; 
 text(indent+7,vert,['\fontsize{10} ' report9(ii)])
 end
-%%% figure with overall text report of perfromances
+%%% figure with overall text report of performances
 
 reportfile=[char(ReportFolder) '\HydroGNSSQCreport_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
 
@@ -665,6 +674,39 @@ str7=['        Bias:                                                 B=' char(st
 str8=['        Correlation coefficient:                     R=' char(string(round(corrcoe(ii),2)))] ;
 C = [C {str0, str1, str2 , str3, str4, str9, str5, str6, str7, str8}] ; 
 end
+
+% Compute and print overall statistics
+noerrornan=find(isnan(errorTOT)==0) ; 
+errorTOT=errorTOT(noerrornan) ; 
+BIAStot=mean(errorTOT) ; 
+UbRMSEtot=std(errorTOT) ;
+RMSEtot=sqrt(UbRMSEtot^2+BIAStot^2) ; 
+RMSE2tot(ii)=sqrt(mean(errorTOT.^2)) ; 
+% pippo=HydroSMtoplot(ii,1:HydroGNSSnumber(ii)) ;
+% pluto=SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii)) ; 
+% corrcoe(ii)=corrcoef(HydroSMtoplot(ii,1:HydroGNSSnumber(ii)), SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii))) ; 
+R=corrcoef(HydroSMtoplotTOT(noerrornan), SMAPSMtoplot_percTOT(noerrornan)) ; 
+corrcoeTOT=R(1,2) ; 
+corrcoe2TOT=mean((HydroSMtoplotTOT(noerrornan)-mean(HydroSMtoplotTOT(noerrornan))).*(SMAPSMtoplot_percTOT(noerrornan)-mean(SMAPSMtoplot_percTOT(noerrornan))))./std(SMAPSMtoplot_percTOT(noerrornan))/std(HydroSMtoplotTOT(noerrornan)) ;
+% text in the odf repoort
+str0=['All days from ' char(DateOK(1)) ' to ' char(DateOK(end))] ; 
+str5=['        Root mean square error:                  RMSE=' char(string(round(RMSEtot,2))), ' m^3/m^3' ] ; 
+str6=['        Unbiased root mean square error:   UbRMSE=' char(string(round(UbRMSEtot,2))), ' m^3/m^3' ] ; 
+str7=['        Bias:                                                 B=' char(string(round(BIAStot,2))), ' m^3/m^3' ] ; 
+str8=['        Correlation coefficient:                     R=' char(string(round(corrcoeTOT,2)))] ;
+C = [C {str0, str5, str6, str7, str8}] ; 
+%% print on screen 
+vert=vert-4 ; 
+text(indent,vert, ['\fontsize{12} All days from ' char(DateOK(1)) ' to ' char(DateOK(end))] ) 
+vert=vert-2 ; 
+text(indent+6.4,vert, ['\fontsize{10} Root Mean Square Error= ' char(string(round(RMSEtot,2))) ' %'] ) 
+vert=vert-2 ; 
+text(indent+6.4,vert, ['\fontsize{10} Unbiased Root Mean Square Error= ' char(string(round(UbRMSEtot,2))) ' %'] ) 
+vert=vert-2 ; 
+text(indent+6.4,vert, ['\fontsize{10} Bias= ' char(string(round(BIAStot,2))) ' %'] ) 
+vert=vert-2 ; 
+text(indent+6.4,vert, ['\fontsize{10} R= ' char(string(round(corrcoeTOT,2)))] ) 
+%%
 ok = text2pdf(reportfile,C,0) ; 
 exportgraphics(vv,reportfile, 'Append', true) ;
 exportgraphics(vvv,reportfile, 'Append', true) ;
