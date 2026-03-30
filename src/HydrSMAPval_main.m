@@ -447,7 +447,7 @@ ax2=gca ;
 end
 clear SMAP
 
-c=colorbar('southoutside')
+c=colorbar('southoutside') ; 
 c.Label.String = 'SSM error [%]';
 title('Map of SSM errors (Reference minus HydroGNSS) [%]')
 %%% end of computation and plot of figure with map of errors
