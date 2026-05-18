@@ -9,7 +9,7 @@ lineSMAP09=1624 ;
 pixelSMOS=1388 ;
 lineSMOS=584 ; 
 
-f = waitbar(0,'QC-main running. Please wait...');
+% f = waitbar(0,'QC-main running. Please wait...');
 
 ex=exist('configurationPath') ;
 if ex ==0
@@ -236,7 +236,7 @@ end  % % end loop on the days
    switch ProductLevel
    case "L2G"
 %%%%%%% Reading L2OP product for each six hour block and all days 
-[vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L2G(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID);
+[vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L2G(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID, ProcessingSatellite);
 %% Fill structure L2OPdataOK with [] in case its size is less than 4 (i.e., the last six hour block never appeared
 [a b]=size(L2OPdataOK) ; for ii=b+1:4;  L2OPdataOK(1,ii).ObservationUTCMidPointTime=[] ; end
    case "L3"
@@ -388,7 +388,7 @@ disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: selection of 
         fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: selection of SMAP and HydroGNSS files on day ' char(string(ii)) ' to be colocated terminated. Program continuing']) ; 
         fprintf(logfileID,'\n') ; 
 %         waitbar(ii/dayOK-0.1,f, 'QC-main progressing ....');
-waitbar(ii/dayOK-0.1,f);
+% waitbar(ii/dayOK-0.1,f);
 
 
 figure(vvvvv) ; nexttile ; geoscatter(SMAPLatitude, SMAPLongitude, [5] , 100.*SMAPSoilMoisture, 'filled')
@@ -541,17 +541,17 @@ ax2=gca ;
 end
 clear SMAP
 
-c=colorbar('southoutside')
+c=colorbar('southoutside') ; 
 c.Label.String = 'SSM error [%]';
 title('Map of SSM errors (Reference minus HydroGNSS) [%]')
 %%% end of computation and plot of figure with map of errors
 
 for ii=dayOKwithSMAP'
  
-report1(ii)=string(['Percentage of retrievals in  HydroGNNS L2 product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
-report2(ii)=string(['Percentage of NaN in  HydroGNNS L2 product  = '       char(string(round(PercSMnan(ii),2))) ' %']) ;
-report3(ii)=string(['Percentage of HydroGNNS L2 product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
-report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS L2 Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
+report1(ii)=string(['Percentage of retrievals in  HydroGNNS ' ProductLevel ' product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
+report2(ii)=string(['Percentage of NaN in  HydroGNNS ' ProductLevel ' product  = '       char(string(round(PercSMnan(ii),2))) ' %']) ;
+report3(ii)=string(['Percentage of HydroGNNS ' ProductLevel ' product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
+report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS ' ProductLevel ' Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
 report9(ii)=string(['Percentage of retrievals with optimal quality = '           char(string(round(PercSM_Flag1_good(ii),2))) ' %']) ;
 report5(ii)=string(['Root Mean Square Error  RMSE = '                      char(string(round(RMSE(ii),2))) ' %']) ;
 report6(ii)=string(['Unbiased Root Mean Square Error  UbRMSE = '           char(string(round(UbRMSE(ii),2))) ' %']) ;
@@ -665,8 +665,8 @@ for ii=dayOKwithSMAP'
 str0=['Day ' char(string(ii)) ': '   char(DateOK(ii))] ; 
 str1 = ['        Number of colocations: ', char(string(NumberColocation(ii)))] ;
 str2 = ['        Percentage of SP with retrievals: ', char(string(round(PercSMretrieve(ii),2))) ' %'] ;
-str3 = ['        Percentage of HydroGNNS product without reference colocation: ',  char(string(round(PercNoColocation(ii),2))) ' %'] ;
-str4 = ['        Percentage of saturated (i.e., 0/50%) HydroGNNS L2 Soil Moisture: ',  char(string(round(PercNoSaturations(ii),2))) ' %'] ;
+str3 = ['        Percentage of HydroGNNS ' ProductLevel ' product without reference colocation: ',  char(string(round(PercNoColocation(ii),2))) ' %'] ;
+str4 = ['        Percentage of saturated (i.e., 0/50%) HydroGNNS ' ProductLevel ' Soil Moisture: ',  char(string(round(PercNoSaturations(ii),2))) ' %'] ;
 str9 = ['        Percentage of retrievals with optimal quality: ',  char(string(round(PercSM_Flag1_good(ii),2))) ' %'] ;
 str5=['        Root mean square error:                  RMSE=' char(string(round(RMSE(ii),2))), ' m^3/m^3' ] ; 
 str6=['        Unbiased root mean square error:   UbRMSE=' char(string(round(UbRMSE(ii),2))), ' m^3/m^3' ] ; 
@@ -707,7 +707,8 @@ text(indent+6.4,vert, ['\fontsize{10} Bias= ' char(string(round(BIAStot,2))) ' %
 vert=vert-2 ; 
 text(indent+6.4,vert, ['\fontsize{10} R= ' char(string(round(corrcoeTOT,2)))] ) 
 %%
-ok = text2pdf(reportfile,C,0) ; 
+% ok = text2pdf(reportfile,C,0) ; 
+exportgraphics(v,reportfile) ;
 exportgraphics(vv,reportfile, 'Append', true) ;
 exportgraphics(vvv,reportfile, 'Append', true) ;
 exportgraphics(vvvv,reportfile, 'Append', true) ;
@@ -716,7 +717,7 @@ exportgraphics(vvvv,reportfile, 'Append', true) ;
  fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: End of program']) ; 
  fprintf(logfileID,'\n') ; 
 
-waitbar(1,f, 'End of program');
-close(f) ;
+% waitbar(1,f, 'End of program');
+% close(f) ;
 
 end
