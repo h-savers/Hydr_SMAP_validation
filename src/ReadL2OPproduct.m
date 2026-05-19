@@ -10,6 +10,7 @@ function L2OPdata=ReadL2OPproduct(isixcount, filefolder, filename, ProductLevel)
 %
 ncid = netcdf.open([filefolder filename], 'NC_NOWRITE');
 trackNcids = netcdf.inqGrps(ncid);
+if isempty(trackNcids)==0
 [a b]=size(trackNcids) ; 
 NumberOfTracks=b ; 
 %
@@ -94,7 +95,17 @@ L2OPdata.SSMQuality=SSMQuality ;
 % tiledlayout('flow')
 % nexttile
 % geoscatter(DataLatitude(:),DataLongitude(:),[], SoilMoisture(:) )
-
+else
+L2OPdata.SoilMoisture=[] ; 
+L2OPdata.DataLatitude=[] ; 
+L2OPdata.DataLongitude=[]; 
+L2OPdata.SoilMoisture=[] ; 
+L2OPdata.map=[] ; 
+L2OPdata.TopLeftColumn=[] ; 
+L2OPdata.TopLeftRow=[] ; 
+L2OPdata.ObservationUTCMidPointTime=[] ; 
+L2OPdata.SSMQuality=[] ; 
+end
 end
 
 
