@@ -10,6 +10,7 @@ function L2OPdata=ReadL2OPproduct(isixcount, filefolder, filename, ProductLevel)
 %
 ncid = netcdf.open([filefolder filename], 'NC_NOWRITE');
 trackNcids = netcdf.inqGrps(ncid);
+if isempty(trackNcids)==0
 [a b]=size(trackNcids) ; 
 NumberOfTracks=b ; 
 %
@@ -19,7 +20,7 @@ NumberOfTracks=b ;
 % end
 % maxsize=max(NumOfSP) ; 
 % SoilMoisture=nan(maxsize, NumberOfTracks) ; 
-SoilMoisture=[]
+SoilMoisture=[] ;
 DataLatitude=SoilMoisture ; 
 DataLongitude=SoilMoisture ;
 SSMQuality=[] ;
@@ -54,12 +55,15 @@ SSMQuality(1:a,itrk)=read ;
 
 varID=netcdf.inqVarID(trackNcids(itrk), 'ObservationUTCMidPointTime')  ;
 read=netcdf.getVar(trackNcids(itrk),varID)  ;
+if ischar(read)>0 , read=string(read') , end 
 ObservationUTCMidPointTime(1:a,itrk)=read ; 
 
 varID=netcdf.inqVarID(trackNcids(itrk), 'SoilMoistureMap')  ;
 read=netcdf.getVar(trackNcids(itrk),varID)  ;
 [a b]=size(read) ; 
 SoilMoistureMap(1:a,1:b,itrk)=read ;
+TopLeftColumn(itrk) = netcdf.getAtt(trackNcids(itrk),netcdf.getConstant("NC_GLOBAL"),'TopLeftColumn') ; 
+TopLeftRow(itrk) = netcdf.getAtt(trackNcids(itrk),netcdf.getConstant("NC_GLOBAL"),'TopLeftRow') ; 
 
 % SoilMoisture(1:a,itrk)=ncread([filepath filename],['/' group '/','SoilMoisture'] ) ; 
 % DataLatitude(1:a,itrk)=ncread([filepath filename],['/' group '/','DataLatitude'] ) ; 
@@ -83,12 +87,26 @@ L2OPdata.SoilMoisture=SoilMoisture ;
 L2OPdata.DataLatitude=DataLatitude ; 
 L2OPdata.DataLongitude=DataLongitude ; 
 L2OPdata.SoilMoisture=SoilMoisture ; 
-L2OPdata.map.SoilMoist=SoilMoistureMap(itrk) ; 
+L2OPdata.map.SoilMoist=SoilMoistureMap ; 
+L2OPdata.TopLeftColumn=TopLeftColumn ; 
+L2OPdata.TopLeftRow=TopLeftRow ; 
 L2OPdata.ObservationUTCMidPointTime=ObservationUTCMidPointTime ; 
-
-figure(20)
-geoscatter(DataLatitude(:),DataLongitude(:),[], SoilMoisture(:) )
-
+L2OPdata.SSMQuality=SSMQuality ; 
+% 
+% tiledlayout('flow')
+% nexttile
+% geoscatter(DataLatitude(:),DataLongitude(:),[], SoilMoisture(:) )
+else
+L2OPdata.SoilMoisture=[] ; 
+L2OPdata.DataLatitude=[] ; 
+L2OPdata.DataLongitude=[]; 
+L2OPdata.SoilMoisture=[] ; 
+L2OPdata.map=[] ; 
+L2OPdata.TopLeftColumn=[] ; 
+L2OPdata.TopLeftRow=[] ; 
+L2OPdata.ObservationUTCMidPointTime=[] ; 
+L2OPdata.SSMQuality=[] ; 
+end
 end
 
 

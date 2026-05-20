@@ -243,7 +243,7 @@ end  % % end loop on the days
 %%%%%%% Reading L3 product for each day 
 [vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L3(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID);
    end
-
+numdays=length(DateOK) ;
 
 %%%%% identify and read Reference Satellite data 
  if RefSatellite=="SMAP"      

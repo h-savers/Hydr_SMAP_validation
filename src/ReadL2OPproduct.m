@@ -55,6 +55,7 @@ SSMQuality(1:a,itrk)=read ;
 
 varID=netcdf.inqVarID(trackNcids(itrk), 'ObservationUTCMidPointTime')  ;
 read=netcdf.getVar(trackNcids(itrk),varID)  ;
+if ischar(read)>0 , read=string(read') ; read=extractBefore(read, "   ") ; end 
 ObservationUTCMidPointTime(1:a,itrk)=read ; 
 
 varID=netcdf.inqVarID(trackNcids(itrk), 'SoilMoistureMap')  ;
