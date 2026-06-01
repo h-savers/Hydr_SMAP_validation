@@ -645,7 +645,11 @@ ylim([0, 1] );
 %%% end of figure with overall scatterplot of HydroGNSS vs reference
 
 %%% figure with overall text report of performances
-v=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
+numpage=ceil(dayOK/4) ;  
+%%% loop of different output pages
+initPage=0 ; 
+for pageID=1:numpage 
+v(pageID)=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 ax1 = axes('Position',[1.1 0. 0.1 0.1]); 
 xlim([0 10]) ;
 ylim([0 10]) ;
@@ -657,7 +661,8 @@ text(indent,vert, ['\fontsize{12} SSM QC report on ' char(datetime)] ) ;
 vert=vert-3 ; 
 text(indent,vert, ['\fontsize{10} Reference:' char(RefSatellite) '. Time period: ' init_SM_Day ' to ' final_SM_Day] )
 ii=0;
-for ik=dayOKwithSMAP'
+finpage=4*(pageID-1)+4 ; if finpage> dayOK, finpage=dayOK ; end 
+for ik=dayOKwithSMAP(4*(pageID-1)+1:finpage)'
 ii=ii+1;
 vert=vert-4 ; 
 % text(indent,vert, ['\fontsize{10} Day ' char(string(ik)) ':    Number of colocations= ' char(string(NumberColocation(ik)))] ) 
@@ -682,8 +687,9 @@ text(indent+7,vert,['\fontsize{10} ' report4(ii)])
 vert=vert-2 ; 
 text(indent+7,vert,['\fontsize{10} ' report9(ii)])
 end
-%%% figure with overall text report of performances
-
+%%% end single page with overall text report of performances
+end 
+%%%  end loop on number of pages
 reportfile=[char(ReportFolder) '\HydroGNSSQCreport_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
 
 Title=['SSM QC report: HydroGNSS vs ' char(RefSatellite)] ;
@@ -740,7 +746,11 @@ vert=vert-2 ;
 text(indent+6.4,vert, ['\fontsize{10} R= ' char(string(round(corrcoeTOT,2)))] ) 
 %%
 % ok = text2pdf(reportfile,C,0) ; 
-exportgraphics(v,reportfile) ;
+exportgraphics(v(1),reportfile) ;
+if numpage>1 
+    for pageID=2:numpage 
+    exportgraphics(v(pageID),reportfile, 'Append', true) ;
+end
 exportgraphics(vv,reportfile, 'Append', true) ;
 exportgraphics(vvv,reportfile, 'Append', true) ;
 exportgraphics(vvvv,reportfile, 'Append', true) ;
