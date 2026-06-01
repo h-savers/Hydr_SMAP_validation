@@ -191,7 +191,7 @@ end
 
 % endDate=endDate+hours(3) ; % Needed since the six hour block H00 starts on the previous day at 23:00:00
 % startDate=startDate+hours(3) ;
-% numdays=ceil(juliandate(endDate)-juliandate(startDate)+1) ; %devo mettere +1 ???????
+% numdays=ceil(juliandate(endDate)-juliandate(startDate)+1) ; %devo mettere +1 ???????RefSatellite
 numdays=ceil(juliandate(endDate)-juliandate(startDate)) ; %devo mettere +1 ???????
 
 %%%% find out HydroGNSS file folder and names for the specified time frame
@@ -266,7 +266,11 @@ numdays=length(DateOK) ;
  SMAP = ReadSMOS(dayOKwithSMOS, SMOSfileOK_SD, SMOSfileOK_SA, SMOSfolderOK, pixelSMOS, lineSMOS); 
  dayOKwithSMAP=dayOKwithSMOS ; 
  dayOK=dayOKSMOS ; 
-
+ else
+disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' ERROR: Wrong reference satellite name. Program stopping']) ; 
+        fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' ERROR: Wrong reference satellite name. Program stopping']) ; 
+        fprintf(logfileID,'\n') ; 
+return
 %%
  end
 
@@ -376,7 +380,9 @@ elseif RefSatellite=="SMOS" & SMAPQC=="NonNominal"  % This sis for SMOS data
 goodRecommended=find(bitget(SMAPretrieval_qual_flag, 1)==0) ;
 SMAPnonan = intersect(SMAPnonan,goodRecommended) ; 
 else
-disp('WARNING: No MW radiometer QC filtering')  
+disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: No MW radiometer QC filtering. Program continuing']) ; 
+        fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: No MW radiometer QC filtering. Program continuing']) ; 
+        fprintf(logfileID,'\n') ; 
 end
 
 SMAPSoilMoisture=SMAPSoilMoisture(SMAPnonan) ; 
@@ -407,7 +413,12 @@ colorbar ;
 % %     title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),' ')) ])
 % % else
 % %     title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),'T')) ])
-pos=find(char(SMAPfileOK(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMAPfileOK(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ]) ; 
+if RefSatellite=="SMAP" | RefSatellite=="SMAP09"
+    pos=find(char(SMAPfileOK(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMAPfileOK(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ]) ; 
+else
+pos=find(char(SMOSfileOK_SA(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMOSfileOK_SA(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ]) ; 
+end
+
 % % end
 
 mindist=[] ;
