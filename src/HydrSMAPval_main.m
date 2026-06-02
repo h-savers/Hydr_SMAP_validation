@@ -260,12 +260,19 @@ numdays=length(DateOK) ;
 
  elseif RefSatellite=="SMOS"
 % Identify SMOS product folders in the PDGS for day OK
- [dayOKSMOS, dayOKwithSMOS, SMOSfolderOK, SMOSfileOK_SD, SMOSfileOK_SA] = IdentifySMOSfolder(L2OPdataOK, timeproduct_sixtotOK, DynamicAuxiliarySMOSRootPath) ; 
+ [dayOKwithSMOS, dayOKwithSMOS, SMOSfolderOK, SMOSfileOK_SD, SMOSfileOK_SA] = IdentifySMOSfolder(L2OPdataOK, timeproduct_sixtotOK, DynamicAuxiliarySMOSRootPath) ; 
 
 %% read SMOS data
- SMAP = ReadSMOS(dayOKwithSMOS, SMOSfileOK_SD, SMOSfileOK_SA, SMOSfolderOK, pixelSMOS, lineSMOS); 
- dayOKwithSMAP=dayOKwithSMOS ; 
- dayOK=dayOKSMOS ; 
+%  SMAP = ReadSMOS(dayOKwithSMOS, SMOSfileOK_SD, SMOSfileOK_SA, SMOSfolderOK, pixelSMOS, lineSMOS); 
+%  dayOKwithSMAP=dayOKwithSMOS ; 
+%  dayOK=dayOKSMOS ; 
+ elseif RefSatellite=="TRIPLE"
+ [dayOK, dayOKwithSMAP, SMAPfolderOK, SMAPfileOK] = IdentifySMAPfolder(L2OPdataOK, timeproduct_sixtotOK, DynamicAuxiliarySMAPRootPath);
+ %% read SMAP 36 km data
+ SMAP = ReadSMAP(dayOKwithSMAP, SMAPfileOK, SMAPfolderOK, pixelSMAP, lineSMAP);
+ [dayOKSMOS, dayOKwithSMOS, SMOSfolderOK, SMOSfileOK_SD, SMOSfileOK_SA] = IdentifySMOSfolder(L2OPdataOK, timeproduct_sixtotOK, DynamicAuxiliarySMOSRootPath) ; 
+ SMOS = ReadSMOS(dayOKwithSMOS, SMOSfileOK_SD, SMOSfileOK_SA, SMOSfolderOK, pixelSMOS, lineSMOS); 
+
  else
 disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' ERROR: Wrong reference satellite name. Program stopping']) ; 
         fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' ERROR: Wrong reference satellite name. Program stopping']) ; 
@@ -281,6 +288,7 @@ return
 % for ll=ia' , SMAPLatitude=[SMAPLatitude; SMAP(ll).latitude_AM(:); SMAP(ll).latitude_PM(:)];  end
 % for ll=ia' , SMAPLongitude=[SMAPLongitude; SMAP(ll).longitude_AM(:); SMAP(ll).longitude_PM(:)];  end
 SMAPSMtoplot=[] ;  
+SMOSSMtoplot=[] ;  
 HydroSMtoplot=[] ; 
 HydroSMtoplotLat=[] ; 
 HydroSMtoplotLon=[] ; 
@@ -295,12 +303,15 @@ end
 end
 dayOKwithHydro=dayOKwithHydro' ; 
 dayOKwithSMAP=intersect(dayOKwithHydro, dayOKwithSMAP) ; 
+dayOKwithSMOS=intersect(dayOKwithHydro, dayOKwithSMOS) ; 
+dayOKwithMWRAD=intersect(dayOKwithSMAP,dayOKwithSMOS) ;
+ 
 % prepare figure with SMAP/SMOS maps
 vvvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
 title(tt, [char(RefSatellite) ' SSM maps [%]'])
 %
-for ii=dayOKwithSMAP' 
+for ii=dayOKwithMWRAD' 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% for L3 we should considere one single day 
 switch ProductLevel
     case "L2G" 
@@ -314,6 +325,17 @@ SMAPLongitude=[SMAP(ii,1).longitude_AM(:); SMAP(ii,2).longitude_AM(:); SMAP(ii,3
     SMAP(ii,1).longitude_PM(:); SMAP(ii,2).longitude_PM(:); SMAP(ii,3).longitude_PM(:)] ;
 SMAPretrieval_qual_flag=[SMAP(ii,1).retrieval_qual_flag_AM_REF(:); SMAP(ii,2).retrieval_qual_flag_AM_REF(:); SMAP(ii,3).retrieval_qual_flag_AM_REF(:) ;...
     SMAP(ii,1).retrieval_qual_flag_PM_REF(:); SMAP(ii,2).retrieval_qual_flag_PM_REF(:); SMAP(ii,3).retrieval_qual_flag_PM_REF(:) ] ;
+
+SMOSSoilMoisture=[SMOS(ii,1).SoilMoisture_AM_REF(:); SMOS(ii,2).SoilMoisture_AM_REF(:); SMOS(ii,3).SoilMoisture_AM_REF(:) ;...
+    SMOS(ii,1).SoilMoisture_PM_REF(:); SMOS(ii,2).SoilMoisture_PM_REF(:); SMOS(ii,3).SoilMoisture_PM_REF(:) ] ;
+SMOSTime=[SMOS(ii,1).tb_time_AM_REF(:); SMOS(ii,2).tb_time_AM_REF(:) ; SMOS(ii,3).tb_time_AM_REF(:);...
+    SMOS(ii,1).tb_time_PM_REF(:); SMOS(ii,2).tb_time_PM_REF(:); SMOS(ii,3).tb_time_PM_REF(:)] ;
+SMOSLatitude=[SMOS(ii,1).latitude_AM(:); SMOS(ii,2).latitude_AM(:); SMOS(ii,3).latitude_AM(:);...
+    SMOS(ii,1).latitude_PM(:); SMOS(ii,2).latitude_PM(:); SMOS(ii,3).latitude_PM(:)] ;
+SMOSLongitude=[SMOS(ii,1).longitude_AM(:); SMOS(ii,2).longitude_AM(:); SMOS(ii,3).longitude_AM(:);...
+    SMOS(ii,1).longitude_PM(:); SMOS(ii,2).longitude_PM(:); SMOS(ii,3).longitude_PM(:)] ;
+SMOSretrieval_qual_flag=[SMOS(ii,1).retrieval_qual_flag_AM_REF(:); SMOS(ii,2).retrieval_qual_flag_AM_REF(:); SMOS(ii,3).retrieval_qual_flag_AM_REF(:) ;...
+    SMOS(ii,1).retrieval_qual_flag_PM_REF(:); SMOS(ii,2).retrieval_qual_flag_PM_REF(:); SMOS(ii,3).retrieval_qual_flag_PM_REF(:) ] ;
 
 % clear SMAP
 
@@ -330,6 +352,13 @@ SMAPTime=[SMAP(ii,2).tb_time_AM_REF(:) ; SMAP(ii,2).tb_time_PM_REF(:)] ;
 SMAPLatitude=[SMAP(ii,2).latitude_AM(:); SMAP(ii,2).latitude_PM(:)] ;
 SMAPLongitude=[SMAP(ii,2).longitude_AM(:); SMAP(ii,2).longitude_PM(:)] ;
 SMAPretrieval_qual_flag=[SMAP(ii,2).retrieval_qual_flag_AM_REF(:); SMAP(ii,2).retrieval_qual_flag_PM_REF(:)]; 
+
+SMOSSoilMoisture=[SMOS(ii,2).SoilMoisture_AM_REF(:); SMOS(ii,2).SoilMoisture_PM_REF(:)]; 
+SMOSTime=[SMOS(ii,2).tb_time_AM_REF(:) ; SMOS(ii,2).tb_time_PM_REF(:)] ;
+SMOSLatitude=[SMOS(ii,2).latitude_AM(:); SMOS(ii,2).latitude_PM(:)] ;
+SMOSLongitude=[SMOS(ii,2).longitude_AM(:); SMOS(ii,2).longitude_PM(:)] ;
+SMOSretrieval_qual_flag=[SMOS(ii,2).retrieval_qual_flag_AM_REF(:); SMOS(ii,2).retrieval_qual_flag_PM_REF(:)]; 
+
 
 HydroSoilMoisture=L2OPdataOK(ii,1).SoilMoisture(:) ;
 HydroTime=L2OPdataOK(ii,1).ObservationUTCMidPointTime(:) ;
@@ -370,6 +399,10 @@ SMAPTime(contains(SMAPTime, "N/A")==1)="NaT" ;  % needed as the first element of
 SMAPnonan=find(SMAPSoilMoisture ~= -9999 & isnan(SMAPSoilMoisture)==0 & datetime(SMAPTime) > min(datetime(HydroTime))- ThresholdTimeDelay/24 ...
     & datetime(SMAPTime) < max(datetime(HydroTime))+ ThresholdTimeDelay/24) ;
 
+SMOSnonan=find(SMOSSoilMoisture ~= -9999 & isnan(SMOSSoilMoisture)==0 & datetime(SMOSTime) > min(datetime(HydroTime))- ThresholdTimeDelay/24 ...
+    & datetime(SMOSTime) < max(datetime(HydroTime))+ ThresholdTimeDelay/24) ;
+
+
 if (RefSatellite=="SMAP" | RefSatellite=="SMAP09") &  SMAPQC=="Recommended" % This sis for SMAP data
 goodRecommended=find(bitget(SMAPretrieval_qual_flag, 1)==0) ;
 SMAPnonan = intersect(SMAPnonan,goodRecommended) ; 
@@ -379,6 +412,11 @@ SMAPnonan = intersect(SMAPnonan,goodSuccessfull) ;
 elseif RefSatellite=="SMOS" & SMAPQC=="NonNominal"  % This sis for SMOS data
 goodRecommended=find(bitget(SMAPretrieval_qual_flag, 1)==0) ;
 SMAPnonan = intersect(SMAPnonan,goodRecommended) ; 
+elseif RefSatellite=="TRIPLE" & SMAPQC=="Recommended"
+goodRecommended=find(bitget(SMAPretrieval_qual_flag, 1)==0) ;
+SMAPnonan = intersect(SMAPnonan,goodRecommended) ; 
+goodRecommended=find(bitget(SMOSretrieval_qual_flag, 1)==0) ;
+SMOSnonan = intersect(SMOSnonan,goodRecommended) ; 
 else
 disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: No MW radiometer QC filtering. Program continuing']) ; 
         fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: No MW radiometer QC filtering. Program continuing']) ; 
@@ -390,15 +428,25 @@ SMAPTime=SMAPTime(SMAPnonan) ;
 SMAPLatitude=SMAPLatitude(SMAPnonan) ;
 SMAPLongitude=SMAPLongitude(SMAPnonan) ;
 SMAPretrieval_qual_flag=SMAPretrieval_qual_flag(SMAPnonan) ;
+
+SMOSSoilMoisture=SMOSSoilMoisture(SMOSnonan) ; 
+SMOSTime=SMOSTime(SMOSnonan) ; 
+SMOSLatitude=SMOSLatitude(SMOSnonan) ;
+SMOSLongitude=SMOSLongitude(SMOSnonan) ;
+SMOSretrieval_qual_flag=SMOSretrieval_qual_flag(SMOSnonan) ;
+
 % clear SMAPnonan HydroSSMQuality Hydrononan DelayPoints SMAPtimeAll arclen pippo
-clear SMAPnonan HydroSSMQuality Hydrononan goodRecommended goodSuccessfull
+clear SMAPnonan SMAPnonan HydroSSMQuality Hydrononan goodRecommended goodSuccessfull
 
 [HydroPoints b]=size(HydroSoilMoisture)  ;
 SMAPSMtoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
+SMOSSMtoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ;
 HydroSMtoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ;
 HydroSMtoplotLat(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
 HydroSMtoplotLon(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
 [SMAPPoints b]=size(SMAPSoilMoisture)  ;
+[SMOSPoints b]=size(SMOSSoilMoisture)  ;
+
 HydroGNSSnumber(ii)=HydroPoints ; 
 disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: selection of SMAP and HydroGNSS files on day ' char(string(ii)) ' to be colocated terminated. Program continuing']) ; 
         fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: selection of SMAP and HydroGNSS files on day ' char(string(ii)) ' to be colocated terminated. Program continuing']) ; 
@@ -421,117 +469,22 @@ end
 
 % % end
 
-mindist=[] ;
-mindelay=[] ; 
-e = referenceEllipsoid('WGS84') ;
-% if savespace=='Yes', mfile = matfile([MATfileFolder '\myFile.mat'],'Writable',true); end
+[SMAPSMtoplot, HydroSMtoplot, HydroSMtoplotLat, HydroSMtoplotLon] = colocationGeneric(savespace, MATfileFolder, SMAPPoints, ...
+    sizesave, HydroLat, HydroLon, SMAPLatitude, SMAPLongitude, ThresholDist, HydroTime, SMAPTime, ThresholdTimeDelay, ...
+    SMAPSMtoplot, ii, HydroSMtoplot, HydroSMtoplotLat, HydroSMtoplotLon, SMAPSoilMoisture, HydroSoilMoisture, ThrSameDist, ...
+    ThrSameTime, logfileID);
+%%%% change names of Hydro data ???????????
+[SMOSSMtoplot, HydroSMtoplot, HydroSMtoplotLat, HydroSMtoplotLon] = colocationGeneric(savespace, MATfileFolder, SMOSPoints, ...
+    sizesave, HydroLat, HydroLon, SMOSLatitude, SMOSLongitude, ThresholDist, HydroTime, SMOSTime, ThresholdTimeDelay, ...
+    SMOSSMtoplot, ii, HydroSMtoplot, HydroSMtoplotLat, HydroSMtoplotLon, SMOSSoilMoisture, HydroSoilMoisture, ThrSameDist, ...
+    ThrSameTime, logfileID);
 
-if savespace=='Yes'
-mfile = matfile([MATfileFolder '\myFile.mat'],'Writable',true); 
-numsplits=fix(SMAPPoints/sizesave) ; 
-if numsplits ==0
-    myfile.arclen=1000.*Mylldistkm([HydroLat'; HydroLon'], [SMAPLatitude'; SMAPLongitude']) ;  
-else
-    myfile.arclen=[] ; 
-    for isplit=1:sizesave:sizesave*numsplits    
-%         isplit
-% myfile.arclen=1000*Mylldistkm([HydroLat'; HydroLon'], [SMAPLatitude(isplit:isplit-1+step)'; SMAPLongitude(isplit:isplit-1+step)']) ; 
-    myfile.arclen=[myfile.arclen, 1000*Mylldistkm([HydroLat'; HydroLon'], [SMAPLatitude(isplit:isplit-1+sizesave)'; SMAPLongitude(isplit:isplit-1+sizesave)']) ] ; 
-end
-    myfile.arclen=[myfile.arclen, 1000*Mylldistkm([HydroLat'; HydroLon'], [SMAPLatitude(isplit+sizesave:end)'; SMAPLongitude(isplit+sizesave:end)']) ] ; 
-end 
-
-% myfile.arclen=1000.*Mylldistkm([HydroLat'; HydroLon'], [SMAPLatitude'; SMAPLongitude']) ;    
-sizearclen=size(myfile.arclen) ; 
-[NearSpacerow, NearSpacecol] = find(myfile.arclen <= ThresholDist) ;
-Idxspace= sub2ind(sizearclen,NearSpacerow,NearSpacecol) ; 
-arclen=myfile.arclen(Idxspace) ; 
-myfile.DelayPoints=hours(repmat(datetime(HydroTime(NearSpacerow)), 1,length(NearSpacerow))-repmat(datetime(SMAPTime(NearSpacecol))', length(NearSpacerow),1 )) ;
-IdxDelay= sub2ind(size(myfile.DelayPoints),[1:1:length(NearSpacerow)]',[1:1:length(NearSpacerow)]') ;
-DelayPoints=myfile.DelayPoints(IdxDelay) ;
-else
-arclen=1000.*Mylldistkm([HydroLat'; HydroLon'], [SMAPLatitude'; SMAPLongitude']) ;
-sizearclen=size(arclen) ; 
-[NearSpacerow, NearSpacecol] = find(arclen <= ThresholDist) ;
-Idxspace= sub2ind(sizearclen,NearSpacerow,NearSpacecol) ; 
-arclen=arclen(Idxspace) ; 
-% DelayPoints=repmat(datetime(HydroTime), 1,SMAPPoints) ; 
-% DelayPoints=hours(DelayPoints-repmat(datetime(SMAPTime)', HydroPoints,1 )) ;
-% DelayPoints=DelayPoints(Idxspace) ; 
-DelayPoints=hours(repmat(datetime(HydroTime(NearSpacerow)), 1,length(NearSpacerow))-repmat(datetime(SMAPTime(NearSpacecol))', length(NearSpacerow),1 )) ;
-IdxDelay= sub2ind(size(DelayPoints),[1:1:length(NearSpacerow)]',[1:1:length(NearSpacerow)]') ;
-DelayPoints=DelayPoints(IdxDelay) ;
-end
-% pippo=isnan(arclen); 
-clear SMAPLatitude SMAPLongitude
-clear HydroTime SMAPTime
-% maxpippo=max(pippo(:)) ; 
-% if max(pippo)==1,  pause(60), end 
-% % mindist(ipoint)=min(arclen) ;
-% clear pippo
-%
-Idxtime=find(abs(DelayPoints) <= ThresholdTimeDelay) ;
-arclen=arclen(Idxtime) ; DelayPoints=DelayPoints(Idxtime) ; 
-NearSpaceTime=Idxspace(Idxtime) ; 
-D=arclen ; T= DelayPoints ; 
-[NearSpaceTimerow,NearSpaceTimecol] = ind2sub(sizearclen,NearSpaceTime)  ;
-
-[C, ia, ic]=unique(NearSpaceTimerow);
-empty=0 ; 
-for ipoint=1:length(C)
-disp(['Colocate HydroGNSS point ' num2str(ipoint) ' of ' num2str(length(C)) ' under threshold']) 
-NearPoints=NearSpaceTimecol(find(NearSpaceTimerow==C(ipoint))) ; 
-if isempty(NearPoints)==1 ;
-    SMAPSMtoplot(ii,C(ipoint))=NaN ; 
-    HydroSMtoplot(ii,C(ipoint))=NaN ;
-    HydroSMtoplotLat(ii,C(ipoint))=NaN ; 
-    HydroSMtoplotLon(ii,C(ipoint))=NaN ; 
-elseif  length(NearPoints) == 1  ;
-    SMAPSMtoplot(ii,C(ipoint))=SMAPSoilMoisture(NearPoints) ; 
-    HydroSMtoplot(ii,C(ipoint))=HydroSoilMoisture(C(ipoint)) ;
-    HydroSMtoplotLat(ii,C(ipoint))=HydroLat(C(ipoint)) ; 
-    HydroSMtoplotLon(ii,C(ipoint))=HydroLon(C(ipoint)); 
-elseif length(NearPoints)>1 
-    mindist=ThresholDist+1; 
-    mindelay=ThresholdTimeDelay ; 
-    indbest=[] ; 
-    for jj=1: length(NearPoints)
-        indNearPoints=find(Idxspace(Idxtime)==sub2ind(sizearclen,C(ipoint),NearPoints(jj))) ; 
-        mindist=min(mindist, arclen(find(Idxspace(Idxtime)==sub2ind(sizearclen,C(ipoint),NearPoints(jj))))) ; 
-        mindelay=min(mindelay, abs(DelayPoints(indNearPoints))) ; 
-        indbest=[indbest, find(Idxspace(Idxtime)==sub2ind(sizearclen,C(ipoint),NearPoints(jj)))] ; 
-    end
-    bestpoint=find(arclen(indbest) < mindist + ThrSameDist & abs(DelayPoints(indbest)) < mindelay+ThrSameTime) ; 
-
-        b=length(bestpoint) ; 
-        if b ==1 ;
-        SMAPSMtoplot(ii,C(ipoint))=SMAPSoilMoisture(NearPoints(bestpoint)) ; 
-        HydroSMtoplot(ii,C(ipoint))=HydroSoilMoisture(C(ipoint)) ;
-        HydroSMtoplotLat(ii,C(ipoint))=HydroLat(C(ipoint)) ; 
-        HydroSMtoplotLon(ii,C(ipoint))=HydroLon(C(ipoint)); 
-        elseif b > 1 ; 
-        SMAPSMtoplot(ii,C(ipoint))=mean(SMAPSoilMoisture(NearPoints(bestpoint))) ; 
-        HydroSMtoplot(ii,C(ipoint))=HydroSoilMoisture(C(ipoint)) ;
-        HydroSMtoplotLat(ii,C(ipoint))=HydroLat(C(ipoint)) ; 
-        HydroSMtoplotLon(ii,C(ipoint))=HydroLon(C(ipoint)); 
-        else
-        % empty=empty+1 n
-        SMAPSMtoplot(ii,C(ipoint))=NaN ; 
-        HydroSMtoplot(ii,C(ipoint))=NaN ;
-        HydroSMtoplotLat(ii,C(ipoint))=NaN ; 
-        HydroSMtoplotLon(ii,C(ipoint))=NaN; 
-        disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: no selection of multiple nearest points. Program continuing']) ; 
-        fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: no selection of multiple nearest points. Program continuing']) ; 
-        fprintf(logfileID,'\n') ;     
-        end
-end
-end %% end loop on number of HydroGNSS points
-%
 NumberColocation(ii)=length(find(isnan(HydroSMtoplot(ii,1:HydroPoints))==0)) ;
 PercNoColocation(ii)=100*size(find(isnan(HydroSMtoplot(ii,1:HydroPoints))==1),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 PercNoSaturations(ii)=100*size(find(HydroSMtoplot(ii,1:HydroPoints)==0 | HydroSMtoplot(ii,1:HydroPoints)==50),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 %
 end  % end look on number of days
+
 SMAPSMtoplot_perc=100.*SMAPSMtoplot ; 
 clear SMAPSMtoplot
 errorTOT=[] ; HydroSMtoplotTOT=[];  SMAPSMtoplot_percTOT=[] ;
