@@ -287,11 +287,11 @@ return
 % for ll=ia' , SMAPTime=[SMAPTime; SMAP(ll).tb_time_AM_REF(:)];  end
 % for ll=ia' , SMAPLatitude=[SMAPLatitude; SMAP(ll).latitude_AM(:); SMAP(ll).latitude_PM(:)];  end
 % for ll=ia' , SMAPLongitude=[SMAPLongitude; SMAP(ll).longitude_AM(:); SMAP(ll).longitude_PM(:)];  end
-SMAPSMtoplot=[] ;  
-SMOSSMtoplot=[] ;  
-HydroSMtoplot=[] ; 
-HydroSMtoplotLat=[] ; 
-HydroSMtoplotLon=[] ; 
+SMAPSMtoplot=[] ;  SMAPSMOStoplot=[] ; 
+SMOSSMtoplot=[] ;  SMOSSMOStoplot=[] ;
+HydroSMtoplot=[] ; HydroSMOStoplot=[] ;
+HydroSMtoplotLat=[] ; HydroSMOStoplotLat=[] ;
+HydroSMtoplotLon=[] ; HydroSMOStoplotLon=[] ;
 % identify days without HydroGNSS data
 ik=0 ; dayOKwithHydro=[] ; 
 for ij=1:numdays 
@@ -444,6 +444,11 @@ SMOSSMtoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ;
 HydroSMtoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ;
 HydroSMtoplotLat(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
 HydroSMtoplotLon(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
+
+HydroSMOStoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ;
+HydroSMOStoplotLat(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
+HydroSMOStoplotLon(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
+
 [SMAPPoints b]=size(SMAPSoilMoisture)  ;
 [SMOSPoints b]=size(SMOSSoilMoisture)  ;
 
@@ -474,14 +479,19 @@ end
     SMAPSMtoplot, ii, HydroSMtoplot, HydroSMtoplotLat, HydroSMtoplotLon, SMAPSoilMoisture, HydroSoilMoisture, ThrSameDist, ...
     ThrSameTime, logfileID);
 %%%% change names of Hydro data ???????????
-[SMOSSMtoplot, HydroSMtoplot, HydroSMtoplotLat, HydroSMtoplotLon] = colocationGeneric(savespace, MATfileFolder, SMOSPoints, ...
+[SMOSSMtoplot, HydroSMOStoplot, HydroSMOStoplotLat, HydroSMOStoplotLon] = colocationGeneric(savespace, MATfileFolder, SMOSPoints, ...
     sizesave, HydroLat, HydroLon, SMOSLatitude, SMOSLongitude, ThresholDist, HydroTime, SMOSTime, ThresholdTimeDelay, ...
-    SMOSSMtoplot, ii, HydroSMtoplot, HydroSMtoplotLat, HydroSMtoplotLon, SMOSSoilMoisture, HydroSoilMoisture, ThrSameDist, ...
+    SMOSSMtoplot, ii, HydroSMOStoplot, HydroSMOStoplotLat, HydroSMOStoplotLon, SMOSSoilMoisture, HydroSoilMoisture, ThrSameDist, ...
     ThrSameTime, logfileID);
 
 NumberColocation(ii)=length(find(isnan(HydroSMtoplot(ii,1:HydroPoints))==0)) ;
 PercNoColocation(ii)=100*size(find(isnan(HydroSMtoplot(ii,1:HydroPoints))==1),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 PercNoSaturations(ii)=100*size(find(HydroSMtoplot(ii,1:HydroPoints)==0 | HydroSMtoplot(ii,1:HydroPoints)==50),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
+
+NumberSMOSColocation(ii)=length(find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==0)) ;
+PercSMOSNoColocation(ii)=100*size(find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==1),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
+PercSMOSNoSaturations(ii)=100*size(find(HydroSMOStoplot(ii,1:HydroPoints)==0 | HydroSMtoplot(ii,1:HydroPoints)==50),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
+
 %
 end  % end look on number of days
 
