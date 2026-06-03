@@ -750,6 +750,7 @@ exportgraphics(v(1),reportfile) ;
 if numpage>1 
     for pageID=2:numpage 
     exportgraphics(v(pageID),reportfile, 'Append', true) ;
+    end
 end
 exportgraphics(vv,reportfile, 'Append', true) ;
 exportgraphics(vvv,reportfile, 'Append', true) ;
