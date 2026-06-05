@@ -287,8 +287,8 @@ return
 % for ll=ia' , SMAPTime=[SMAPTime; SMAP(ll).tb_time_AM_REF(:)];  end
 % for ll=ia' , SMAPLatitude=[SMAPLatitude; SMAP(ll).latitude_AM(:); SMAP(ll).latitude_PM(:)];  end
 % for ll=ia' , SMAPLongitude=[SMAPLongitude; SMAP(ll).longitude_AM(:); SMAP(ll).longitude_PM(:)];  end
-SMAPSMtoplot=[] ;  SMAPSMOStoplot=[] ; 
-SMOSSMtoplot=[] ;  SMOSSMOStoplot=[] ;
+SMAPSMtoplot=[] ;  SMAPSMtoplotLat=[] ; 
+SMOSSMtoplot=[] ;  SMOSSMtoplot=[] ;
 HydroSMtoplot=[] ; HydroSMOStoplot=[] ;
 HydroSMtoplotLat=[] ; HydroSMOStoplotLat=[] ;
 HydroSMtoplotLon=[] ; HydroSMOStoplotLon=[] ;
@@ -492,11 +492,38 @@ NumberSMOSColocation(ii)=length(find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==0
 PercSMOSNoColocation(ii)=100*size(find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==1),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 PercSMOSNoSaturations(ii)=100*size(find(HydroSMOStoplot(ii,1:HydroPoints)==0 | HydroSMtoplot(ii,1:HydroPoints)==50),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 
+colocWithSMAP=find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==0) ; 
+colocWithSMOS=find(isnan(HydroSMtoplot(ii,1:HydroPoints))==0) ;
+tripleColoc=intersect(colocWithSMAP,colocWithSMOS) ; 
+
+%%%% compute dailyt triple collocation
+SMAPSMtriple=SMAPSMtoplot(ii,tripleColoc) ;        %%  This is X 
+SMOSSMtriple=SMOSSMtoplot(ii,tripleColoc) ;        %%  This is Y
+HydroSMtriple=HydroSMtoplot(ii,tripleColoc) ;      %%  This is Z
+
+sigma2_R=[0:0.05: 0.5] ; sigma2_R=0 ; 
+sigma2_X=var(SMAPSMtriple)  ; 
+corr_XY=corrcoef(SMAPSMtriple, SMOSSMtriple) ; corr_XY=corr_XY(1,2) ; 
+corr_XZ=corrcoef(SMAPSMtriple, HydroSMtriple) ; corr_XZ=corr_XZ(1,2) ;  
+corr_YZ=corrcoef(SMOSSMtriple, HydroSMtriple) ; corr_YZ=corr_YZ(1,2) ; 
+
+eps2_X=sigma2_X*(1-corr_XY*corr_XZ/corr_YZ) + sigma2_R ;
+
+eps2_Y=sigma2_X*(corr_XZ^2/corr_YZ^2-corr_XY*corr_XZ/corr_YZ)+ sigma2_R ;
+
+eps2_Z=sigma2_X*((corr_XY/corr_YZ-sigma2_R/sigma2_X/corr_XZ)^2-corr_XY*corr_XZ/corr_YZ) + sigma2_R ;
+
+%%%%
+figure, plot(HydroSMtoplot(tripleColoc),SMAPSMtoplot(tripleColoc), '.' )
+hold on, plot(HydroSMOStoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.r')
+plot(SMOSSMtoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.g')
 %
 end  % end look on number of days
 
 SMAPSMtoplot_perc=100.*SMAPSMtoplot ; 
-clear SMAPSMtoplot
+SMOSSMtoplot_perc=100.*SMOSSMtoplot ; 
+
+clear SMAPSMtoplot, SMOSSMtoplot_perc
 errorTOT=[] ; HydroSMtoplotTOT=[];  SMAPSMtoplot_percTOT=[] ;
 %%% computation and plot of figure with map of errors
 vvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
