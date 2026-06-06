@@ -407,7 +407,7 @@ disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: selection of 
 % waitbar(ii/dayOK-0.1,f);
 
 
-figure(vvvvv) ; nexttile ; geoscatter(SMAPLatitude, SMAPLongitude, [5] , 100.*SMAPSoilMoisture, 'filled')
+figure(vvvvv) ; nexttile ; geoscatter(SMAPLatitude, SMAPLongitude, [3] , 100.*SMAPSoilMoisture, 'filled')
 colorbar ; 
 % % if RefSatellite=="SMOS"
 % %     title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),' ')) ])
