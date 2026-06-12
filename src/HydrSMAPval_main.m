@@ -8,6 +8,7 @@ pixelSMAP09=3856 ;
 lineSMAP09=1624 ; 
 pixelSMOS=1388 ;
 lineSMOS=584 ; 
+NumLandCells=190127 ; % valid for EASE Grid 25 km
 
 % f = waitbar(0,'QC-main running. Please wait...');
 
@@ -293,6 +294,38 @@ if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij
     ik=ik+1 ; dayOKwithHydro(ik)=ij ; 
 end
 end
+%% Plot all HydroGNSS data
+HySSM=[]; HyLat=[]; HyLon=[]; for ii=1:dayOK, for kk=1:4, HySSM=[HySSM; L2OPdataOK(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOK(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOK(ii,kk).DataLongitude(:)]; end, end
+good=find(isnan(HySSM)==0 & HyLat ~=0 & HyLon ~=0 ) ;
+HyLat=HyLat(good) ; HyLon= HyLon(good); HySSM=HySSM(good) ; 
+[column,row] = easeconv_grid3(HyLat, HyLon, 25) ; 
+A=[column, row] ; 
+[C, ia, ic]= unique(A, 'rows');
+
+
+PercentageFilledCells= 100*length(ia)/NumLandCells ;
+Perc= char(string(PercentageFilledCells)) ; 
+[gamma, lagCenters, npairs] = semivariogram_geo(HySSM,  HyLat, HyLon) ;
+
+yy=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
+tt=tiledlayout('flow') ; 
+nexttile
+geoscatter(HyLat, HyLon, 3, HySSM, 'filled')
+title('Reflectivity L1 Left entire period')
+nexttile
+scatter(C(:,1), 585-C(:,2), 1) ; xlim([1, 1388]) ; ylim([1, 584]) ; 
+xlabel('EASE GRid 25 km column'), ylabel('EASE Grid 25km row')
+title(['Filled EASE Grid 25km cells. Percentage filled land cell:' Perc(1:5) '%'])
+
+nexttile
+plot(lagCenters,gamma,'ko-','LineWidth',1.5)
+xlabel('Lag distance (km)')
+ylabel('\gamma(h)')
+title('HydroGNSS soild moisture semivariogram')
+grid on
+
+clear HyLat HyLon HySSM column row C ia ic A 
+%% end plot
 dayOKwithHydro=dayOKwithHydro' ; 
 dayOKwithSMAP=intersect(dayOKwithHydro, dayOKwithSMAP) ; 
 % prepare figure with SMAP/SMOS maps
@@ -754,6 +787,7 @@ if numpage>1
 end
 exportgraphics(vv,reportfile, 'Append', true) ;
 exportgraphics(vvv,reportfile, 'Append', true) ;
+exportgraphics(yy,reportfile, 'Append', true) ;
 exportgraphics(vvvv,reportfile, 'Append', true) ;
 
  disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: End of program']) ; 
