@@ -37,6 +37,11 @@ SMOSfolderOK(ii,3)=string([char(DynamicAuxiliarySMOSRootPath) '\' char(string(ty
         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF3SA")==1 , SMOSfileOK_SA(ii,1)=string(content(zz).name); 
         dayOKwithSMOS(ii)=ii ;
         % else, throw(MException('INPUT:ERROR', "SMOS file non available in existing folder. Program exiting.")) ;
+%         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF31D")==1 , SMOSfileOK_SD(ii,1)=string(content(zz).name); 
+%         dayOKwithSMOS(ii)=ii ; 
+%         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF31A")==1 , SMOSfileOK_SA(ii,1)=string(content(zz).name); 
+%         dayOKwithSMOS(ii)=ii ; 
+        % else, throw(MException('INPUT:ERROR', "SMOS file non available in existing folder. Program exiting.")) ;
         end
     end
     else SMOSfolderOK(ii,1)=NaN ; SMOSfileOK(ii,1)=NaN ; 
@@ -49,6 +54,11 @@ SMOSfolderOK(ii,3)=string([char(DynamicAuxiliarySMOSRootPath) '\' char(string(ty
         dayOKwithSMOS(ii)=ii ; 
         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF3SA")==1 , SMOSfileOK_SA(ii,2)=string(content(zz).name); 
         dayOKwithSMOS(ii)=ii ; 
+        % else, throw(MException('INPUT:ERROR', "SMOS file non available in existing folder. Program exiting.")) ;
+%         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF31D")==1 , SMOSfileOK_SD(ii,2)=string(content(zz).name); 
+%         dayOKwithSMOS(ii)=ii ; 
+%         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF31A")==1 , SMOSfileOK_SA(ii,2)=string(content(zz).name); 
+%         dayOKwithSMOS(ii)=ii ; 
         % else, throw(MException('INPUT:ERROR', "SMOS file non available in existing folder. Program exiting.")) ;
         end
     end     
@@ -63,7 +73,11 @@ SMOSfolderOK(ii,3)=string([char(DynamicAuxiliarySMOSRootPath) '\' char(string(ty
         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF3SA")==1 , SMOSfileOK_SA(ii,3)=string(content(zz).name); 
         dayOKwithSMOS(ii)=ii ; 
         % else, throw(MException('INPUT:ERROR', "SMOS file non available in existing folder. Program exiting.")) ;
- 
+%         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF31D")==1 , SMOSfileOK_SD(ii,3)=string(content(zz).name); 
+%         dayOKwithSMOS(ii)=ii ; 
+%         elseif contains(string(content(zz).name), ".nc")==1 & contains(string(content(zz).name), "CLF31A")==1 , SMOSfileOK_SA(ii,3)=string(content(zz).name); 
+%         dayOKwithSMOS(ii)=ii ; 
+        % else, throw(MException('INPUT:ERROR', "SMOS file non available in existing folder. Program exiting.")) ;
         end
     end
     else SMOSfolderOK(ii,3)=NaN ; SMOSfileOK(ii,3)=NaN ;
