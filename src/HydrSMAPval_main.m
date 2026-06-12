@@ -723,6 +723,9 @@ end
 %%% end single page with overall text report of performances
 end 
 %%%  end loop on number of pages
+% reportName=['HydroGNSSQCreport' ProcessingSatellite(1) ProcessingSatellite(11) '_' init_SM_Day(9:10) '-' init_SM_Day(6:7) 'to' final_SM_Day(9:10) '-' final_SM_Day(6:7) '_' extractAfter(DataInputRootPath, 'SapienzaProducts_')] ;
+% reportfile=[char(ReportFolder) '\' reportName '.pdf'] ;
+
 reportfile=[char(ReportFolder) '\HydroGNSSQCreport_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
 
 Title=['SSM QC report: HydroGNSS vs ' char(RefSatellite)] ;
