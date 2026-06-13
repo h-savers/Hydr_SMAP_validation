@@ -14,16 +14,23 @@ if isempty(trackNcids)==0
 [a b]=size(trackNcids) ; 
 NumberOfTracks=b ; 
 %
+Maxdim=0 ; 
+for itrk=1:NumberOfTracks ;
+varID=netcdf.inqVarID(trackNcids(itrk), 'SoilMoisture')  ;
+[varname, xtype, dimids, numatts] = netcdf.inqVar(trackNcids(itrk), varID);
+[dimname, dimlen] =netcdf.inqDim(trackNcids(itrk), dimids(end)) ; 
+Maxdim=max(dimlen, Maxdim) ; 
+end
 % for itrk=1:NumberOfTracks ;
 % % [a b c]=info.Groups(itrk).Dimensions.Length ; 
 % NumOfSP(itrk)=a ; 
 % end
 % maxsize=max(NumOfSP) ; 
 % SoilMoisture=nan(maxsize, NumberOfTracks) ; 
-SoilMoisture=[] ;
+SoilMoisture=NaN(Maxdim,NumberOfTracks) ;
 DataLatitude=SoilMoisture ; 
 DataLongitude=SoilMoisture ;
-SSMQuality=[] ;
+SSMQuality=SoilMoisture ;
 
 for itrk=1:NumberOfTracks ;
 % group=char(string(itrk-1)) ; 

@@ -59,7 +59,7 @@ prompt={    'First day to compare [YYYY-MM-DDThh:mm]: ', ...
             'Last day to compare [YYYY-MM-DDThh:mm]: ', ...
             'Reference MW radiometer product [SMAP/SMA09/SMOS]: ' ...
             'HydroGNSS product level [L2G/L3]: ',...
-            'HydroGNSS satellite [HydroGNSS-1/HydroGNSS-2]: ', ...
+            'HydroGNSS satellite [HydroGNSS-1/HydroGNSS-2/both]: ', ...
             'Save computer memory [Yes/No]: ',...
             'Size of reference data blocks [N. of pixels]: ',...
             'Quality flag of SMAP [Successfull/Recommended/none] or SMOS [NonNominal/none]: ', ...
@@ -131,7 +131,9 @@ WriteConfig2(configurationPath, init_SM_Day,final_SM_Day,RefSatellite, ProductLe
     DynamicAuxiliarySMAPRootPath, DynamicAuxiliarySMAP09RootPath, LogsOutputRootPath, ThresholDist, ThresholdTimeDelay,...
     ThrSameDist, ThrSameTime, Threshold09Dist, Thr09SameDist, ReportFolder, SMAPQC, sizesave] = ReadConfFile(configurationPath);
 %
- end
+end
+
+Processingboth=ProcessingSatellite ; %% used to swith to validate both satellite
 %
 %%%%%%% Open log file
 if ~exist(LogsOutputRootPath)
@@ -200,7 +202,8 @@ for ii=1:numdays
 timeproduct=startDate+ii-1 ; 
    switch ProductLevel
    case "L2G"
-for kk=1:4
+       if Processingboth=="both" , ProcessingSatellite='HydroGNSS-1' ; end
+for kk=1:4    
     timeproductsix=timeproduct+hours((kk-1)*6) ; 
     timeproduct_sixtot(ii, kk)=timeproductsix ; 
     [tyear, tmonth, tday]=ymd(timeproductsix) ; 
@@ -238,6 +241,11 @@ end  % % end loop on the days
    case "L2G"
 %%%%%%% Reading L2OP product for each six hour block and all days 
 [vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L2G(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID, ProcessingSatellite);
+if Processingboth=="both"
+for i=1:numdays, for k=1:4, L2OPfolder_sixtot_both(i,k)=replace(L2OPfolder_sixtot(i,k), "HydroGNSS-1", "HydroGNSS-2") ; end, end
+[vv, timeproduct_sixtotOKboth, L2OPdataOKboth, DateOKboth] = Read_L2G(numdays, L2OPfolder_sixtot_both, timeproduct_sixtot, ProductLevel, logfileID, "HydroGNSS-2");
+end
+
 %% Fill structure L2OPdataOK with [] in case its size is less than 4 (i.e., the last six hour block never appeared
 [a b]=size(L2OPdataOK) ; for ii=b+1:4;  L2OPdataOK(1,ii).ObservationUTCMidPointTime=[] ; end
    case "L3"
@@ -296,12 +304,15 @@ end
 end
 %% Plot all HydroGNSS data
 HySSM=[]; HyLat=[]; HyLon=[]; for ii=1:dayOK, for kk=1:4, HySSM=[HySSM; L2OPdataOK(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOK(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOK(ii,kk).DataLongitude(:)]; end, end
+if Processingboth=="both"
+for ii=1:dayOK, for kk=1:4, HySSM=[HySSM; L2OPdataOKboth(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOKboth(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOKboth(ii,kk).DataLongitude(:)]; end, end
+end
+
 good=find(isnan(HySSM)==0 & HyLat ~=0 & HyLon ~=0 ) ;
 HyLat=HyLat(good) ; HyLon= HyLon(good); HySSM=HySSM(good) ; 
 [column,row] = easeconv_grid3(HyLat, HyLon, 25) ; 
 A=[column, row] ; 
 [C, ia, ic]= unique(A, 'rows');
-
 
 PercentageFilledCells= 100*length(ia)/NumLandCells ;
 Perc= char(string(PercentageFilledCells)) ; 
