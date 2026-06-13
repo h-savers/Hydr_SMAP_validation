@@ -252,8 +252,10 @@ end
 %%%%%%% Reading L3 product for each day 
 [vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L3(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID);
    end
-numdays=length(DateOK) ;
-
+if Processingboth=="both"
+        numdayboth=length(DateOKboth) ;
+end
+    numdays=length(DateOK) ;
 %%%%% identify and read Reference Satellite data 
  if RefSatellite=="SMAP"      
 %% Identify SMAP product folders in the PDGS for day OK
@@ -295,11 +297,17 @@ HydroSMtoplotLat=[] ;
 HydroSMtoplotLon=[] ; 
 % identify days without HydroGNSS data
 ik=0 ; dayOKwithHydro=[] ; 
-for ij=1:numdays 
-
-if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij,2).ObservationUTCMidPointTime)>0 ...
+for ij=1:numdays %%%%%%%%%%%%%%%%%%  to be corrected
+if Processingboth=="both"
+        if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij,2).ObservationUTCMidPointTime)>0 ...
+        | length(L2OPdataOK(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,4).ObservationUTCMidPointTime)>0 ...
+        | length(L2OPdataOKboth(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOKboth(ij,2).ObservationUTCMidPointTime)>0 ...
+        | length(L2OPdataOKboth(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOKboth(ij,4).ObservationUTCMidPointTime)>0 
+    ik=ik+1 ; dayOKwithHydro(ik)=ij ; end
+else
+        if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij,2).ObservationUTCMidPointTime)>0 ...
         | length(L2OPdataOK(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,4).ObservationUTCMidPointTime)>0 
-    ik=ik+1 ; dayOKwithHydro(ik)=ij ; 
+    ik=ik+1 ; dayOKwithHydro(ik)=ij ; end
 end
 end
 %% Plot all HydroGNSS data
