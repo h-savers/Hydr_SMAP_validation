@@ -302,7 +302,7 @@ HyLat=HyLat(good) ; HyLon= HyLon(good); HySSM=HySSM(good) ;
 A=[column, row] ; 
 [C, ia, ic]= unique(A, 'rows');
 
-
+NumLandCells
 PercentageFilledCells= 100*length(ia)/NumLandCells ;
 Perc= char(string(PercentageFilledCells)) ; 
 [gamma, lagCenters, npairs] = semivariogram_geo(HySSM,  HyLat, HyLon) ;
@@ -311,17 +311,19 @@ yy=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
 nexttile
 geoscatter(HyLat, HyLon, 3, HySSM, 'filled')
-title('Reflectivity L1 Left entire period')
+title('HydroGNSS Soil Moisture entire period')
+c=colorbar ;
+c.Label.String = 'SSM [%]';
 nexttile
 scatter(C(:,1), 585-C(:,2), 1) ; xlim([1, 1388]) ; ylim([1, 584]) ; 
 xlabel('EASE GRid 25 km column'), ylabel('EASE Grid 25km row')
-title(['Filled EASE Grid 25km cells. Percentage filled land cell:' Perc(1:5) '%'])
+title(['Overland filled EASE Grid 25km cells: ' Perc(1:4) '%'])
 
 nexttile
 plot(lagCenters,gamma,'ko-','LineWidth',1.5)
 xlabel('Lag distance (km)')
 ylabel('\gamma(h)')
-title('HydroGNSS soild moisture semivariogram')
+title('HydroGNSS soil moisture semivariogram')
 grid on
 
 clear HyLat HyLon HySSM column row C ia ic A 
@@ -331,7 +333,7 @@ dayOKwithSMAP=intersect(dayOKwithHydro, dayOKwithSMAP) ;
 % prepare figure with SMAP/SMOS maps
 vvvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, [char(RefSatellite) ' SSM maps [%]'])
+title(tt, [char(RefSatellite) ' SSM maps [%] (' SMAPQC ' flag)'])
 %
 for ii=dayOKwithSMAP' 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% for L3 we should considere one single day 
@@ -598,7 +600,7 @@ end
 clear SMAP
 
 c=colorbar('southoutside') ; 
-c.Label.String = 'SSM error [%]';
+c.LimitsMode='manual'; c.Limits=[-10, 10]; colormap(turbo); c.Label.String = 'SSM error [%]';
 title('All day map of SSM errors (Reference minus HydroGNSS) [%]')
 %%% end of computation and plot of figure with map of errors
 ii=0 ;
