@@ -775,11 +775,11 @@ C = [C {str0, str5, str6, str7, str8}] ;
 vert=vert-4 ; 
 text(indent,vert, ['\fontsize{12} All days from ' char(DateOK(1)) ' to ' char(DateOK(end))] ) 
 vert=vert-2 ; 
-text(indent+6.4,vert, ['\fontsize{10} Root Mean Square Error= ' char(string(round(RMSEtot,2))) ' %'] ) 
+text(indent+6.4,vert, ['\fontsize{10} Root Mean Square Error= ' char(string(round(RMSEtot/100,3))) ' m^3/m^3 (' char(string(round(RMSEtot,2))) ' %)'] ) 
 vert=vert-2 ; 
-text(indent+6.4,vert, ['\fontsize{10} Unbiased Root Mean Square Error= ' char(string(round(UbRMSEtot,2))) ' %'] ) 
+text(indent+6.4,vert, ['\fontsize{10} Unbiased Root Mean Square Error= ' char(string(round(UbRMSEtot/100,3))) ' m^3/m^3 (' char(string(round(UbRMSEtot,2))) ' %)'] ) 
 vert=vert-2 ; 
-text(indent+6.4,vert, ['\fontsize{10} Bias= ' char(string(round(BIAStot,2))) ' %'] ) 
+text(indent+6.4,vert, ['\fontsize{10} Bias= ' char(string(round(BIAStot/100,3))) ' m^3/m^3 (' char(string(round(BIAStot,2))) ' %)'] ) 
 vert=vert-2 ; 
 text(indent+6.4,vert, ['\fontsize{10} R= ' char(string(round(corrcoeTOT,2)))] ) 
 %%
