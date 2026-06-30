@@ -298,22 +298,17 @@ HydroSMtoplotLon=[] ;
 % identify days without HydroGNSS data
 ik=0 ; dayOKwithHydro=[] ; 
 for ij=1:numdays %%%%%%%%%%%%%%%%%%  to be corrected
-if Processingboth=="both"
-        if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij,2).ObservationUTCMidPointTime)>0 ...
-        | length(L2OPdataOK(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,4).ObservationUTCMidPointTime)>0 ...
-        | length(L2OPdataOKboth(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOKboth(ij,2).ObservationUTCMidPointTime)>0 ...
-        | length(L2OPdataOKboth(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOKboth(ij,4).ObservationUTCMidPointTime)>0 
-    ik=ik+1 ; dayOKwithHydro(ik)=ij ; end
-else
         if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij,2).ObservationUTCMidPointTime)>0 ...
         | length(L2OPdataOK(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,4).ObservationUTCMidPointTime)>0 
     ik=ik+1 ; dayOKwithHydro(ik)=ij ; end
 end
-end
+
+
+
 %% Plot all HydroGNSS data
 HySSM=[]; HyLat=[]; HyLon=[]; for ii=1:dayOK, for kk=1:4, HySSM=[HySSM; L2OPdataOK(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOK(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOK(ii,kk).DataLongitude(:)]; end, end
 if Processingboth=="both"
-for ii=1:dayOK, for kk=1:4, HySSM=[HySSM; L2OPdataOKboth(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOKboth(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOKboth(ii,kk).DataLongitude(:)]; end, end
+for ii=1:dayOKboth, for kk=1:4, HySSM=[HySSM; L2OPdataOKboth(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOKboth(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOKboth(ii,kk).DataLongitude(:)]; end, end
 end
 
 good=find(isnan(HySSM)==0 & HyLat ~=0 & HyLon ~=0 ) ;
