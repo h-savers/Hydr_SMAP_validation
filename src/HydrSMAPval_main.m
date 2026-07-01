@@ -8,6 +8,7 @@ pixelSMAP09=3856 ;
 lineSMAP09=1624 ; 
 pixelSMOS=1388 ;
 lineSMOS=584 ; 
+NumLandCells=190127 ; % valid for EASE Grid 25 km
 
 % f = waitbar(0,'QC-main running. Please wait...');
 
@@ -301,6 +302,40 @@ if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij
     ik=ik+1 ; dayOKwithHydro(ik)=ij ; 
 end
 end
+%% Plot all HydroGNSS data
+HySSM=[]; HyLat=[]; HyLon=[]; for ii=1:dayOK, for kk=1:4, HySSM=[HySSM; L2OPdataOK(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOK(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOK(ii,kk).DataLongitude(:)]; end, end
+good=find(isnan(HySSM)==0 & HyLat ~=0 & HyLon ~=0 ) ;
+HyLat=HyLat(good) ; HyLon= HyLon(good); HySSM=HySSM(good) ; 
+[column,row] = easeconv_grid3(HyLat, HyLon, 25) ; 
+A=[column, row] ; 
+[C, ia, ic]= unique(A, 'rows');
+
+NumLandCells
+PercentageFilledCells= 100*length(ia)/NumLandCells ;
+Perc= char(string(PercentageFilledCells)) ; 
+[gamma, lagCenters, npairs] = semivariogram_geo(HySSM,  HyLat, HyLon) ;
+
+yy=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
+tt=tiledlayout('flow') ; 
+nexttile
+geoscatter(HyLat, HyLon, 3, HySSM, 'filled')
+title('HydroGNSS Soil Moisture entire period')
+c=colorbar ;
+c.Label.String = 'SSM [%]';
+nexttile
+scatter(C(:,1), 585-C(:,2), 1) ; xlim([1, 1388]) ; ylim([1, 584]) ; 
+xlabel('EASE GRid 25 km column'), ylabel('EASE Grid 25km row')
+title(['Overland filled EASE Grid 25km cells: ' Perc(1:4) '%'])
+
+nexttile
+plot(lagCenters,gamma,'ko-','LineWidth',1.5)
+xlabel('Lag distance (km)')
+ylabel('\gamma(h)')
+title('HydroGNSS soil moisture semivariogram')
+grid on
+
+clear HyLat HyLon HySSM column row C ia ic A 
+%% end plot
 dayOKwithHydro=dayOKwithHydro' ; 
 dayOKwithSMAP=intersect(dayOKwithHydro, dayOKwithSMAP) ; 
 dayOKwithSMOS=intersect(dayOKwithHydro, dayOKwithSMOS) ; 
@@ -309,7 +344,7 @@ dayOKwithMWRAD=intersect(dayOKwithSMAP,dayOKwithSMOS) ;
 % prepare figure with SMAP/SMOS maps
 vvvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, [char(RefSatellite) ' SSM maps [%]'])
+title(tt, [char(RefSatellite) ' SSM maps [%] (' SMAPQC ' flag)'])
 %
 for ii=dayOKwithMWRAD' 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% for L3 we should considere one single day 
@@ -460,7 +495,7 @@ disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: selection of 
 % waitbar(ii/dayOK-0.1,f);
 
 
-figure(vvvvv) ; nexttile ; geoscatter(SMAPLatitude, SMAPLongitude, [5] , 100.*SMAPSoilMoisture, 'filled')
+figure(vvvvv) ; nexttile ; geoscatter(SMAPLatitude, SMAPLongitude, [3] , 100.*SMAPSoilMoisture, 'filled')
 colorbar ; 
 % % if RefSatellite=="SMOS"
 % %     title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),' ')) ])
@@ -555,7 +590,7 @@ end
 clear SMAP
 
 c=colorbar('southoutside') ; 
-c.Label.String = 'SSM error [%]';
+c.LimitsMode='manual'; c.Limits=[-10, 10]; colormap(turbo); c.Label.String = 'SSM error [%]';
 title('All day map of SSM errors (Reference minus HydroGNSS) [%]')
 %%% end of computation and plot of figure with map of errors
 ii=0 ;
@@ -680,6 +715,9 @@ end
 %%% end single page with overall text report of performances
 end 
 %%%  end loop on number of pages
+% reportName=['HydroGNSSQCreport' ProcessingSatellite(1) ProcessingSatellite(11) '_' init_SM_Day(9:10) '-' init_SM_Day(6:7) 'to' final_SM_Day(9:10) '-' final_SM_Day(6:7) '_' extractAfter(DataInputRootPath, 'SapienzaProducts_')] ;
+% reportfile=[char(ReportFolder) '\' reportName '.pdf'] ;
+
 reportfile=[char(ReportFolder) '\HydroGNSSQCreport_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
 
 Title=['SSM QC report: HydroGNSS vs ' char(RefSatellite)] ;
@@ -727,11 +765,11 @@ C = [C {str0, str5, str6, str7, str8}] ;
 vert=vert-4 ; 
 text(indent,vert, ['\fontsize{12} All days from ' char(DateOK(1)) ' to ' char(DateOK(end))] ) 
 vert=vert-2 ; 
-text(indent+6.4,vert, ['\fontsize{10} Root Mean Square Error= ' char(string(round(RMSEtot,2))) ' %'] ) 
+text(indent+6.4,vert, ['\fontsize{10} Root Mean Square Error= ' char(string(round(RMSEtot/100,3))) ' m^3/m^3 (' char(string(round(RMSEtot,2))) ' %)'] ) 
 vert=vert-2 ; 
-text(indent+6.4,vert, ['\fontsize{10} Unbiased Root Mean Square Error= ' char(string(round(UbRMSEtot,2))) ' %'] ) 
+text(indent+6.4,vert, ['\fontsize{10} Unbiased Root Mean Square Error= ' char(string(round(UbRMSEtot/100,3))) ' m^3/m^3 (' char(string(round(UbRMSEtot,2))) ' %)'] ) 
 vert=vert-2 ; 
-text(indent+6.4,vert, ['\fontsize{10} Bias= ' char(string(round(BIAStot,2))) ' %'] ) 
+text(indent+6.4,vert, ['\fontsize{10} Bias= ' char(string(round(BIAStot/100,3))) ' m^3/m^3 (' char(string(round(BIAStot,2))) ' %)'] ) 
 vert=vert-2 ; 
 text(indent+6.4,vert, ['\fontsize{10} R= ' char(string(round(corrcoeTOT,2)))] ) 
 %%
@@ -740,9 +778,11 @@ exportgraphics(v(1),reportfile) ;
 if numpage>1 
     for pageID=2:numpage 
     exportgraphics(v(pageID),reportfile, 'Append', true) ;
+    end
 end
 exportgraphics(vv,reportfile, 'Append', true) ;
 exportgraphics(vvv,reportfile, 'Append', true) ;
+exportgraphics(yy,reportfile, 'Append', true) ;
 exportgraphics(vvvv,reportfile, 'Append', true) ;
 
  disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: End of program']) ; 
