@@ -589,6 +589,7 @@ ylim([0, 1] );
 numpage=ceil(dayOK/4) ;  
 %%% loop of different output pages
 initPage=0 ; 
+ii=0;
 for pageID=1:numpage 
 v(pageID)=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 ax1 = axes('Position',[1.1 0. 0.1 0.1]); 
