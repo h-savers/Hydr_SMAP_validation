@@ -601,7 +601,7 @@ sizefontSmall=12 ;
 text(indent,vert, ['\fontsize{12} SSM QC report on ' char(datetime)] ) ; 
 vert=vert-3 ; 
 text(indent,vert, ['\fontsize{10} Reference:' char(RefSatellite) '. Time period: ' init_SM_Day ' to ' final_SM_Day] )
-ii=0;
+% ii=0;
 finpage=4*(pageID-1)+4 ; if finpage> dayOK, finpage=dayOK ; end 
 for ik=dayOKwithSMAP(4*(pageID-1)+1:finpage)'
 ii=ii+1;
