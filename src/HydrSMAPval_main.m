@@ -673,6 +673,7 @@ ylim([0, 1] );
 numpage=ceil(dayOK/4) ;  
 %%% loop of different output pages
 initPage=0 ; 
+ii=0;
 for pageID=1:numpage 
 v(pageID)=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 ax1 = axes('Position',[1.1 0. 0.1 0.1]); 
@@ -685,7 +686,7 @@ sizefontSmall=12 ;
 text(indent,vert, ['\fontsize{12} SSM QC report on ' char(datetime)] ) ; 
 vert=vert-3 ; 
 text(indent,vert, ['\fontsize{10} Reference:' char(RefSatellite) '. Time period: ' init_SM_Day ' to ' final_SM_Day] )
-ii=0;
+% ii=0;
 finpage=4*(pageID-1)+4 ; if finpage> dayOK, finpage=dayOK ; end 
 for ik=dayOKwithSMAP(4*(pageID-1)+1:finpage)'
 ii=ii+1;
