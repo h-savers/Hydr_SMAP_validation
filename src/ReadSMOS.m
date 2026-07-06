@@ -43,7 +43,7 @@ SMOS(ii,1).retrieval_qual_flag_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).latitude_AM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).latitude_PM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).longitude_AM=nan(pixelSMOS, lineSMOS) ;
-SMOS(ii,1).longiture_PM=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,1).longitude_PM=nan(pixelSMOS, lineSMOS) ;
 
 
 end
@@ -87,7 +87,7 @@ SMOS(ii,2).retrieval_qual_flag_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).latitude_AM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).latitude_PM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).longitude_AM=nan(pixelSMOS, lineSMOS) ;
-SMOS(ii,2).longiture_PM=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,2).longitude_PM=nan(pixelSMOS, lineSMOS) ;
 end 
 
 if ismissing(SMOSfolderOK(ii,3)) ==0

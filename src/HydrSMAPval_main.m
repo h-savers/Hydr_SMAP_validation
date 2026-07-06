@@ -57,7 +57,7 @@ Answer{12}= char(DynamicAuxiliarySMAP09RootPath) ;
 % ****** get inputs from GUI
 prompt={    'First day to compare [YYYY-MM-DDThh:mm]: ', ...
             'Last day to compare [YYYY-MM-DDThh:mm]: ', ...
-            'Reference MW radiometer product [SMAP/SMA09/SMOS]: ' ...
+            'Reference MW radiometer product [SMAP/SMA09/SMOS/TRIPLE]: ' ...
             'HydroGNSS product level [L2G/L3]: ',...
             'HydroGNSS satellite [HydroGNSS-1/HydroGNSS-2]: ', ...
             'Save computer memory [Yes/No]: ',...
@@ -337,15 +337,20 @@ grid on
 clear HyLat HyLon HySSM column row C ia ic A 
 %% end plot
 dayOKwithHydro=dayOKwithHydro' ; 
+if RefSatellite=="SMAP"  | RefSatellite=="SMAP09"
 dayOKwithSMAP=intersect(dayOKwithHydro, dayOKwithSMAP) ; 
+elseif RefSatellite=="SMOS"
 dayOKwithSMOS=intersect(dayOKwithHydro, dayOKwithSMOS) ; 
+elseif RefSatellite=="TRIPLE"
 dayOKwithMWRAD=intersect(dayOKwithSMAP,dayOKwithSMOS) ;
- 
+end
+
 % prepare figure with SMAP/SMOS maps
 vvvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
 title(tt, [char(RefSatellite) ' SSM maps [%] (' SMAPQC ' flag)'])
 %
+if RefSatellite=="TRIPLE"
 for ii=dayOKwithMWRAD' 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% for L3 we should considere one single day 
 switch ProductLevel
@@ -527,8 +532,8 @@ NumberSMOSColocation(ii)=length(find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==0
 PercSMOSNoColocation(ii)=100*size(find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==1),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 PercSMOSNoSaturations(ii)=100*size(find(HydroSMOStoplot(ii,1:HydroPoints)==0 | HydroSMtoplot(ii,1:HydroPoints)==50),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
 
-colocWithSMAP=find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==0) ; 
-colocWithSMOS=find(isnan(HydroSMtoplot(ii,1:HydroPoints))==0) ;
+colocWithSMAP=find(isnan(HydroSMtoplot(ii,1:HydroPoints))==0) ; 
+colocWithSMOS=find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==0) ;
 tripleColoc=intersect(colocWithSMAP,colocWithSMOS) ; 
 
 %%%% compute dailyt triple collocation
@@ -554,11 +559,13 @@ hold on, plot(HydroSMOStoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.r')
 plot(SMOSSMtoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.g')
 %
 end  % end look on number of days
-
+else
+disp('only TRIPLE option enabled') ; return
+end % end of if for TRIPLE option, the only option enable in the script
 SMAPSMtoplot_perc=100.*SMAPSMtoplot ; 
 SMOSSMtoplot_perc=100.*SMOSSMtoplot ; 
 
-clear SMAPSMtoplot, SMOSSMtoplot_perc
+clear SMAPSMtoplot, SMOSSMtoplot
 errorTOT=[] ; HydroSMtoplotTOT=[];  SMAPSMtoplot_percTOT=[] ;
 %%% computation and plot of figure with map of errors
 vvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
