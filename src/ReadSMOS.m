@@ -1,4 +1,4 @@
-function SMOS = ReadSMOS(dayOKwithSMOS, SMOSfileOK_SD, SMOcolocationSMASfileOK_SA, SMOSfolderOK, pixelSMOS, lineSMOS)
+function SMOS = ReadSMOS(dayOKwithSMOS, SMOSfileOK_SD, SMOSfileOK_SA, SMOSfolderOK, pixelSMOS, lineSMOS)
 SecInDay=24*60*60 ; 
 for ii=dayOKwithSMOS'
 

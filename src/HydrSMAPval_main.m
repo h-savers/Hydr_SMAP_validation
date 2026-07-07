@@ -16,6 +16,7 @@ ex=exist('configurationPath') ;
 if ex ==0
     mode="GUI" ;
     [configurationfile configurationPath] = uigetfile('./*.cfg', 'Select input configuration file') ; 
+    %% 
     configurationPath= [ configurationPath configurationfile]  ; 
 else
     if ~isfile(configurationPath)
