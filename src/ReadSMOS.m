@@ -17,6 +17,7 @@ seconds=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SD(ii,1))], 'Mean_Acq_T
 SMOS(ii,1).tb_time_AM_REF=datetime(2000,1,1)+SMOS(ii,1).tb_time_AM_REF+seconds/SecInDay ; 
 SMOS(ii,1).tb_time_AM_REF=string(SMOS(ii,1).tb_time_AM_REF) ; 
 SMOS(ii,1).retrieval_qual_flag_AM_REF=int32(ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SD(ii,1))] , 'Science_Flags')) ;
+SMOS(ii,1).Ratio_RFI_AM_REF=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SD(ii,1))] , 'Ratio_RFI') ; 
 
 SMOS(ii,1).SoilMoisture_PM_REF=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SA(ii,1))], 'Soil_Moisture') ;
 SMOS(ii,1).tb_time_PM_REF=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SA(ii,1))], 'Mean_Acq_Time_Days') ;
@@ -24,6 +25,7 @@ seconds=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SA(ii,1))], 'Mean_Acq_T
 SMOS(ii,1).tb_time_PM_REF=datetime(2000,1,1)+SMOS(ii,1).tb_time_PM_REF+seconds/SecInDay ; 
 SMOS(ii,1).tb_time_PM_REF=string(SMOS(ii,1).tb_time_PM_REF) ; 
 SMOS(ii,1).retrieval_qual_flag_PM_REF=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SA(ii,1))], 'Soil_Moisture') ;
+SMOS(ii,1).Ratio_RFI_PM_REF=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SA(ii,1))] , 'Ratio_RFI') ; 
 
 buffer=ncread([char(SMOSfolderOK(ii,1)) char(SMOSfileOK_SD(ii,1))], 'lat') ;
 SMOS(ii,1).latitude_AM=repmat(buffer',pixelSMOS,1) ;
@@ -37,9 +39,11 @@ else
 SMOS(ii,1).SoilMoisture_AM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,1).tb_time_AM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,1).retrieval_qual_flag_AM_REF=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,1).Ratio_RFI_AM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).SoilMoisture_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).tb_time_PM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,1).retrieval_qual_flag_PM_REF=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,1).Ratio_RFI_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).latitude_AM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).latitude_PM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,1).longitude_AM=nan(pixelSMOS, lineSMOS) ;
@@ -61,6 +65,7 @@ seconds=ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SD(ii,2))], 'Mean_Acq_T
 SMOS(ii,2).tb_time_AM_REF=datetime(2000,1,1)+SMOS(ii,2).tb_time_AM_REF+seconds/SecInDay ; 
 SMOS(ii,2).tb_time_AM_REF=string(SMOS(ii,2).tb_time_AM_REF) ; 
 SMOS(ii,2).retrieval_qual_flag_AM_REF=int32(ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SD(ii,2))] , 'Science_Flags')) ;
+SMOS(ii,2).Ratio_RFI_AM_REF=ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SD(ii,2))] , 'Ratio_RFI') ; 
 
 SMOS(ii,2).SoilMoisture_PM_REF=ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SA(ii,2))], 'Soil_Moisture') ;
 SMOS(ii,2).tb_time_PM_REF=ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SA(ii,2))], 'Mean_Acq_Time_Days') ;
@@ -68,6 +73,7 @@ seconds=ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SA(ii,2))], 'Mean_Acq_T
 SMOS(ii,2).tb_time_PM_REF=datetime(2000,1,1)+SMOS(ii,2).tb_time_PM_REF+seconds/SecInDay ; 
 SMOS(ii,2).tb_time_PM_REF=string(SMOS(ii,2).tb_time_PM_REF) ; 
 SMOS(ii,2).retrieval_qual_flag_PM_REF=int32(ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SD(ii,2))] , 'Science_Flags')) ;
+SMOS(ii,2).Ratio_RFI_PM_REF=ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SA(ii,2))] , 'Ratio_RFI') ; 
 
 buffer=ncread([char(SMOSfolderOK(ii,2)) char(SMOSfileOK_SD(ii,2))], 'lat') ;
 SMOS(ii,2).latitude_AM=repmat(buffer',pixelSMOS,1) ;
@@ -81,9 +87,11 @@ else
 SMOS(ii,2).SoilMoisture_AM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,2).tb_time_AM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,2).retrieval_qual_flag_AM_REF=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,2).Ratio_RFI_AM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).SoilMoisture_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).tb_time_PM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,2).retrieval_qual_flag_PM_REF=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,2).Ratio_RFI_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).latitude_AM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).latitude_PM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,2).longitude_AM=nan(pixelSMOS, lineSMOS) ;
@@ -97,6 +105,7 @@ seconds=ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SD(ii,3))], 'Mean_Acq_T
 SMOS(ii,3).tb_time_AM_REF=datetime(2000,1,1)+SMOS(ii,3).tb_time_AM_REF+seconds/SecInDay ; 
 SMOS(ii,3).tb_time_AM_REF=string(SMOS(ii,3).tb_time_AM_REF) ; 
 SMOS(ii,3).retrieval_qual_flag_AM_REF=int32(ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SD(ii,3))] , 'Science_Flags')) ;
+SMOS(ii,3).Ratio_RFI_AM_REF=ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SD(ii,3))] , 'Ratio_RFI') ; 
 
 SMOS(ii,3).SoilMoisture_PM_REF=ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SA(ii,3))], 'Soil_Moisture') ;
 SMOS(ii,3).tb_time_PM_REF=ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SA(ii,3))], 'Mean_Acq_Time_Days') ;
@@ -104,6 +113,7 @@ seconds=ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SA(ii,3))], 'Mean_Acq_T
 SMOS(ii,3).tb_time_PM_REF=datetime(2000,1,1)+SMOS(ii,3).tb_time_PM_REF+seconds/SecInDay ; 
 SMOS(ii,3).tb_time_PM_REF=string(SMOS(ii,3).tb_time_PM_REF) ;
 SMOS(ii,3).retrieval_qual_flag_PM_REF=int32(ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SA(ii,3))], 'Science_Flags')) ;
+SMOS(ii,3).Ratio_RFI_PM_REF=ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SA(ii,3))] , 'Ratio_RFI') ; 
 
 buffer=ncread([char(SMOSfolderOK(ii,3)) char(SMOSfileOK_SD(ii,3))], 'lat') ;
 SMOS(ii,3).latitude_AM=repmat(buffer',pixelSMOS,1) ;
@@ -117,9 +127,11 @@ else
 SMOS(ii,3).SoilMoisture_AM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,3).tb_time_AM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,3).retrieval_qual_flag_AM_REF=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,3).Ratio_RFI_AM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,3).SoilMoisture_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,3).tb_time_PM_REF=nan(pixelSMOS, lineSMOS) ; 
 SMOS(ii,3).retrieval_qual_flag_PM_REF=nan(pixelSMOS, lineSMOS) ;
+SMOS(ii,3).Ratio_RFI_PM_REF=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,3).latitude_AM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,3).latitude_PM=nan(pixelSMOS, lineSMOS) ;
 SMOS(ii,3).longitude_AM=nan(pixelSMOS, lineSMOS) ;

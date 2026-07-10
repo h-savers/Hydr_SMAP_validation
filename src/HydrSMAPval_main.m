@@ -537,26 +537,55 @@ colocWithSMOS=find(isnan(HydroSMOStoplot(ii,1:HydroPoints))==0) ;
 tripleColoc=intersect(colocWithSMAP,colocWithSMOS) ; 
 
 %%%% compute dailyt triple collocation
-SMAPSMtriple=SMAPSMtoplot(ii,tripleColoc) ;        %%  This is X 
-SMOSSMtriple=SMOSSMtoplot(ii,tripleColoc) ;        %%  This is Y
+SMAPSMtriple=SMAPSMtoplot(ii,tripleColoc)*100 ;        %%  This is X 
+SMOSSMtriple=SMOSSMtoplot(ii,tripleColoc)*100 ;        %%  This is Y
 HydroSMtriple=HydroSMtoplot(ii,tripleColoc) ;      %%  This is Z
 
-sigma2_R=[0:0.05: 0.5] ; sigma2_R=0 ; 
 sigma2_X=var(SMAPSMtriple)  ; 
+sigma2_R=[0:0.01: 0.1*sigma2_X] ; % sigma2_R=0 ; 
+
+% SMOSSMtriple=SMOSSMtriple- mean(SMOSSMtriple-SMAPSMtriple) ;        %%  This is Y
+% HydroSMtriple=HydroSMtriple- mean(HydroSMtriple-SMAPSMtriple)  ;      %%  This is Z
+
+
 corr_XY=corrcoef(SMAPSMtriple, SMOSSMtriple) ; corr_XY=corr_XY(1,2) ; 
 corr_XZ=corrcoef(SMAPSMtriple, HydroSMtriple) ; corr_XZ=corr_XZ(1,2) ;  
 corr_YZ=corrcoef(SMOSSMtriple, HydroSMtriple) ; corr_YZ=corr_YZ(1,2) ; 
+
+% sigma2_X=var(SMOSSMtriple)  ; 
+% corr_XZ=corrcoef(SMOSSMtriple, HydroSMtriple) ; corr_XZ=corr_XZ(1,2) ;  
+% corr_YZ=corrcoef(SMAPSMtriple, HydroSMtriple) ; corr_YZ=corr_YZ(1,2) ; 
 
 eps2_X=sigma2_X*(1-corr_XY*corr_XZ/corr_YZ) + sigma2_R ;
 
 eps2_Y=sigma2_X*(corr_XZ^2/corr_YZ^2-corr_XY*corr_XZ/corr_YZ)+ sigma2_R ;
 
-eps2_Z=sigma2_X*((corr_XY/corr_YZ-sigma2_R/sigma2_X/corr_XZ)^2-corr_XY*corr_XZ/corr_YZ) + sigma2_R ;
+eps2_Z=((corr_XY/corr_YZ-sigma2_R./sigma2_X/corr_XZ).^2-corr_XY*corr_XZ/corr_YZ)*sigma2_X + sigma2_R ;
+
+figure, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
+plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
+legend('Err. std. SMAP', 'Err. std. SMOS', 'Err. std. HydroGNSS')
+xlabel('SMAP-SMOS Representativeness error std. [%]')
+ylabel('Error std. [%]')
+ylim([0,10])
+title('Triple colocation analys for different r^2. HydroGNSS-1, July 1st 2026')
+
+
+
+disp(['eps2_SMAP: ' char(string(eps2_X(1))) '; eps2_SMOS: ' char(string(eps2_Y(1))) '; eps2_Hydr: ' char(string(eps2_Z(1)))])
+
+disp(['Error standard deviation (r^2=0%): SMAP=' char(string(sqrt(eps2_X(1)))) '% ; SMOS=' char(string(sqrt(eps2_Y(1)))) '% ; Hydr= ' char(string(sqrt(eps2_Z(1)))) '%'])
+disp(['Error standard deviation r^2=' char(string(sigma2_R(10))) ' : SMAP=' char(string(sqrt(eps2_X(1)))) '% ; SMOS=' char(string(sqrt(eps2_Y(1)))) '% ; Hydr= ' char(string(sqrt(eps2_Z(1)))) '%'])
+
 
 %%%%
-figure, plot(HydroSMtoplot(tripleColoc),SMAPSMtoplot(tripleColoc), '.' )
-hold on, plot(HydroSMOStoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.r')
+figure, plot(HydroSMtoplot(tripleColoc)/100,SMAPSMtoplot(tripleColoc), '.' )
+hold on, plot(HydroSMOStoplot(tripleColoc)/100, SMOSSMtoplot(tripleColoc), '.r')
 plot(SMOSSMtoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.g')
+xlim([0,0.6]) ; ylim([0,0.6]) ; 
+legend('SMAP vs Hydr ', 'SMOS vs Hydr', 'SMAP vs SMOS')
+xlabel('HydroGNSS/SMOS SSM [m^3/m^3]') ; ylabel('SMAP/SMOS SSM [m^3/m^3]') 
+title('Triple colocation of HydroGNSS-1, SMOS, SMAP 36km; June 1st 2026')
 %
 end  % end look on number of days
 else
