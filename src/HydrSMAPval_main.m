@@ -596,7 +596,7 @@ plot(SMOSSMtoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.g')
 xlim([0,0.6]) ; ylim([0,0.6]) ; 
 legend('SMAP vs Hydr ', 'SMOS vs Hydr', 'SMAP vs SMOS')
 xlabel('HydroGNSS/SMOS SSM [m^3/m^3]') ; ylabel('SMAP/SMOS SSM [m^3/m^3]') 
-title('Triple colocation of HydroGNSS-1, SMOS, SMAP 36km; June 1st 2026')
+title('Triple colocation; June 1st 2026')
 
 nexttile, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
 plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
@@ -652,7 +652,7 @@ plot(SMOSSMtoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.g')
 xlim([0,0.6]) ; ylim([0,0.6]) ; 
 legend('SMAP36km vs Hydr ', 'SMOS vs Hydr', 'SMAP36km vs SMOS')
 xlabel('HydroGNSS/SMOS SSM [m^3/m^3]') ; ylabel('SMAP/SMOS SSM [m^3/m^3]') 
-title('Triple colocation; June 1st 2026')
+title('Triple colocation scatterplots')
 
 nexttile, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
 plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
