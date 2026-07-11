@@ -585,7 +585,7 @@ eps2_Z=((corr_XY/corr_YZ-sigma2_R./sigma2_X/corr_XZ).^2-corr_XY*corr_XZ/corr_YZ)
 
 
 disp(['eps2_SMAP: ' char(string(eps2_X(1))) '; eps2_SMOS: ' char(string(eps2_Y(1))) '; eps2_Hydr: ' char(string(eps2_Z(1)))])
-
+disp(['Num. colocations day ' char(string(ii)) ': ' char(string(length(tripleColoc)))])
 disp(['Error standard deviation (r^2=0%): SMAP=' char(string(sqrt(eps2_X(1)))) '% ; SMOS=' char(string(sqrt(eps2_Y(1)))) '% ; Hydr= ' char(string(sqrt(eps2_Z(1)))) '%'])
 disp(['Error standard deviation r^2=' char(string(sigma2_R(10))) ' : SMAP=' char(string(sqrt(eps2_X(1)))) '% ; SMOS=' char(string(sqrt(eps2_Y(1)))) '% ; Hydr= ' char(string(sqrt(eps2_Z(1)))) '%'])
 
@@ -596,7 +596,7 @@ plot(SMOSSMtoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.g')
 xlim([0,0.6]) ; ylim([0,0.6]) ; 
 legend('SMAP vs Hydr ', 'SMOS vs Hydr', 'SMAP vs SMOS')
 xlabel('HydroGNSS/SMOS SSM [m^3/m^3]') ; ylabel('SMAP/SMOS SSM [m^3/m^3]') 
-title('Triple colocation; June 1st 2026')
+title(['Triple colocation. ' ProcessingSatellite ', day ' char(DateOK(ii))])
 
 nexttile, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
 plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
@@ -604,13 +604,15 @@ legend('Err. std. SMAP', 'Err. std. SMOS', 'Err. std. HydroGNSS')
 xlabel('SMAP-SMOS Representativeness error std. [%]')
 ylabel('Error std. [%]')
 ylim([0,10])
-title('Triple colocation analys for different r^2. HydroGNSS-1, July 1st 2026')
+title(['TC for different r^2. ' ProcessingSatellite ', day ' char(DateOK(ii))])
 %
 end  % end look on number of days
 else
 disp('only TRIPLE option enabled') ; return
 end % end of if for TRIPLE option, the only option enable in the script
 %%%%%%%%%%%%%%%%  compute triple usinf total colocates dataset
+nonzero=find(HydroSMtripleTOT ~= 0 & HydroSMtripleTOT ~= 5) ; 
+
 sigma2_X=var(SMAPSMtripleTOT)  ; 
 sigma2_R=[0:0.01: 0.1*sigma2_X] ; % sigma2_R=0 ; 
 
@@ -645,14 +647,15 @@ disp(['Error standard deviation r^2=' char(string(sigma2_R(10))) ' : SMAP=' char
 
 trday2=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, [char(RefSatellite) ' SSM maps [%] (' SMAPQC ' flag)']) 
-nexttile, plot(HydroSMtoplot(tripleColoc)/100,SMAPSMtoplot(tripleColoc), '.' )
-hold on, plot(HydroSMOStoplot(tripleColoc)/100, SMOSSMtoplot(tripleColoc), '.r')
-plot(SMOSSMtoplot(tripleColoc), SMAPSMtoplot(tripleColoc), '.g')
+title(tt, ['TRIPLE COLLOCATION. ' ProcessingSatellite ', days ' char(DateOK(1)) ' to ' char(DateOK(end))]) 
+figure(trday2)
+nexttile, plot(HydroSMtripleTOT/100,SMAPSMtripleTOT/100, '.' )
+hold on, plot(HydroSMtripleTOT/100, SMOSSMtripleTOT/100, '.r')
+plot(SMOSSMtripleTOT/100, SMAPSMtripleTOT/100, '.g')
 xlim([0,0.6]) ; ylim([0,0.6]) ; 
 legend('SMAP36km vs Hydr ', 'SMOS vs Hydr', 'SMAP36km vs SMOS')
 xlabel('HydroGNSS/SMOS SSM [m^3/m^3]') ; ylabel('SMAP/SMOS SSM [m^3/m^3]') 
-title('Triple colocation scatterplots')
+title(['TC scatterplots.  ' ProcessingSatellite '/SMAP/SMOS'])
 
 nexttile, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
 plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
@@ -660,9 +663,32 @@ legend('Err. std. SMAP36km', 'Err. std. SMOS', 'Err. std. HydroGNSS')
 xlabel('SMAP-SMOS Representativeness error std. [%]')
 ylabel('Error std. [%]')
 ylim([0,10])
-title('TP errors vs r^2. HydroGNSS-1, July 1st 2026')
+title('TP errors vs r^2')
 
-%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%   Other plot
+trday3=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
+tt=tiledlayout('flow') ; 
+title(tt, ['TRIPLE COLLOCATION. ' ProcessingSatellite ', days ' char(DateOK(1)) ' to ' char(DateOK(end))]) 
+figure(trday3)
+nexttile, plot(HydroSMtripleTOT/100,SMAPSMtripleTOT/100, '.' )
+xlim([0,0.6]) ; ylim([0,0.6]) ; 
+xlabel('HydroGNSS SSM [m^3/m^3]') ; ylabel('SMAP SSM [m^3/m^3]') 
+nexttile, plot(HydroSMtripleTOT/100, SMOSSMtripleTOT/100, '.r')
+xlim([0,0.6]) ; ylim([0,0.6]) ; 
+xlabel('HydroGNS SSM [m^3/m^3]') ; ylabel('SMOS SSM [m^3/m^3]') 
+nexttile, plot(SMOSSMtripleTOT/100, SMAPSMtripleTOT/100, '.g')
+xlim([0,0.6]) ; ylim([0,0.6]) ; 
+xlabel('SMOS SSM [m^3/m^3]') ; ylabel('SMAP SSM [m^3/m^3]') 
+title(['TC scatterplots.  ' ProcessingSatellite '/SMAP/SMOS'])
+
+nexttile, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
+plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
+legend('Err. std. SMAP36km', 'Err. std. SMOS', 'Err. std. HydroGNSS')
+xlabel('SMAP-SMOS Representativeness error std. [%]')
+ylabel('Error std. [%]')
+ylim([0,10])
+title('TP errors vs r^2')
+%%%%%%%%%%%%%%%%%
 
 
 
