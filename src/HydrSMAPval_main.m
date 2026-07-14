@@ -8,7 +8,8 @@ pixelSMAP09=3856 ;
 lineSMAP09=1624 ; 
 pixelSMOS=1388 ;
 lineSMOS=584 ; 
-NumLandCells=190127 ; % valid for EASE Grid 25 km
+% NumLandCells=190127 ; % valid for EASE Grid 25 km removing snow/ice and water bodies
+NumLandCells=189821 ; % valid for EASE Grid 25 km removing also urban areas
 
 % f = waitbar(0,'QC-main running. Please wait...');
 
@@ -303,7 +304,6 @@ HyLat=HyLat(good) ; HyLon= HyLon(good); HySSM=HySSM(good) ;
 A=[column, row] ; 
 [C, ia, ic]= unique(A, 'rows');
 
-NumLandCells
 PercentageFilledCells= 100*length(ia)/NumLandCells ;
 Perc= char(string(PercentageFilledCells)) ; 
 [gamma, lagCenters, npairs] = semivariogram_geo(HySSM,  HyLat, HyLon) ;
