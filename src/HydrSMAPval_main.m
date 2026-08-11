@@ -500,7 +500,7 @@ SMAPSMtoplot_percTOT=[SMAPSMtoplot_percTOT pluto] ;
 R=corrcoef(pippo(noerrornan), pluto(noerrornan)) ; 
 corrcoe(ii)=R(1,2) ; 
 corrcoe2(ii)=mean((pippo(noerrornan)-mean(pippo(noerrornan))).*(pluto(noerrornan)-mean(pluto(noerrornan))))./std(pluto(noerrornan))/std(pippo(noerrornan)) ;
-geoscatter(HydroSMtoplotLat(ik,noerrornan),HydroSMtoplotLon(ik,noerrornan), 50, error, 'filled')
+geoscatter(HydroSMtoplotLat(ik,noerrornan),HydroSMtoplotLon(ik,noerrornan), 30, error, 'filled')
 hold on
 ax2=gca ; 
 end
@@ -513,10 +513,10 @@ title('All day map of SSM errors (Reference minus HydroGNSS) [%]')
 ii=0 ;
 for ik=dayOKwithSMAP'
 ii=ii+1 ; 
-report1(ii)=string(['Percentage of retrievals in  HydroGNNS ' ProductLevel ' product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
-report2(ii)=string(['Percentage of NaN in  HydroGNNS ' ProductLevel ' product  = '       char(string(round(PercSMnan(ii),2))) ' %']) ;
-report3(ii)=string(['Percentage of HydroGNNS ' ProductLevel ' product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
-report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS ' ProductLevel ' Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
+geoscatterreport1(ii)=string(['Percentage of retrievals in  HydroGNNS ' char(ProductLevel) ' product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
+report2(ii)=string(['Percentage of NaN in  HydroGNNS ' char(ProductLevel) ' product  = '       char(string(round(PercSMnan(ii),2))) ' %']) ;
+report3(ii)=string(['Percentage of HydroGNNS ' char(ProductLevel) ' product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
+report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS ' char(ProductLevel) ' Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
 report9(ii)=string(['Percentage of retrievals with optimal quality = '           char(string(round(PercSM_Flag1_good(ii),2))) ' %']) ;
 report5(ii)=string(['Root Mean Square Error  RMSE = '                      char(string(round(RMSE(ii),2))) ' %']) ;
 report6(ii)=string(['Unbiased Root Mean Square Error  UbRMSE = '           char(string(round(UbRMSE(ii),2))) ' %']) ;
