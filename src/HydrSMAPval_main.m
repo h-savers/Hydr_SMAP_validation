@@ -513,7 +513,7 @@ title('All day map of SSM errors (Reference minus HydroGNSS) [%]')
 ii=0 ;
 for ik=dayOKwithSMAP'
 ii=ii+1 ; 
-geoscatterreport1(ii)=string(['Percentage of retrievals in  HydroGNNS ' char(ProductLevel) ' product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
+report1(ii)=string(['Percentage of retrievals in  HydroGNNS ' char(ProductLevel) ' product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
 report2(ii)=string(['Percentage of NaN in  HydroGNNS ' char(ProductLevel) ' product  = '       char(string(round(PercSMnan(ii),2))) ' %']) ;
 report3(ii)=string(['Percentage of HydroGNNS ' char(ProductLevel) ' product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
 report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS ' char(ProductLevel) ' Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
