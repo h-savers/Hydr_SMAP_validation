@@ -204,7 +204,8 @@ if ProcessingSatellite=='Both' , Both=1; ProcessingSatellite='HydroGNSS-1' ; end
 for ii=1:numdays
 timeproduct=startDate+ii-1 ; 
    switch ProductLevel
-   case "L2G"
+   case "L2G"   
+    if Both==1,  ProcessingSatellite='HydroGNSS-1' ; end 
 for kk=1:4
     timeproductsix=timeproduct+hours((kk-1)*6) ; 
     timeproduct_sixtot(ii, kk)=timeproductsix ; 
@@ -223,12 +224,12 @@ for kk=1:4
         end
    % L2OPfolder_sixtot(ii+ii*(kk-1))=string(L2OPfoldername) ; % vector with full folder path of L2OP product files
     L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % matrix [num of days x 4 six hour block per day] vector with full folder path of L2OP product files
-
+end  % end loop on the 6 six hour bloch per day in case L2G
     % end 
     if Both==1  % replicate lines for the four blocks for second satellite
     ProcessingSatellite='HydroGNSS-2' ; 
 for kk=5:8
-    timeproductsix=timeproduct+hours((kk-1)*6) ; 
+    timeproductsix=timeproduct+hours((kk-4-1)*6) ; 
     timeproduct_sixtot(ii, kk)=timeproductsix ; 
     [tyear, tmonth, tday]=ymd(timeproductsix) ; 
     [thour, tmin, tsec]=hms(timeproductsix) ;
@@ -245,9 +246,9 @@ for kk=5:8
         end
    % L2OPfolder_sixtot(ii+ii*(kk-1))=string(L2OPfoldername) ; % vector with full folder path of L2OP product files
     L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % matrix [num of days x 4 six hour block per day] vector with full folder path of L2OP product files
-    end  % end for of 4 hour bkock second satellite 
+    end  % end for of 4 hour block second satellite 
     end  % end if  Both=1 (2 satellites)
-end  % end loop on the 6 six hour bloch per day in case L2G
+
     case "L3"
     kk=1 ; 
     timeproductsix=timeproduct+hours((kk-1)*6) ; 
@@ -662,7 +663,7 @@ sizefontLarge=15 ;
 sizefontSmall=12 ;
 text(indent,vert, ['\fontsize{12} SSM QC report on ' char(datetime)] ) ; 
 vert=vert-3 ; 
-if Both==1, HydroSatellite='Hydr1&Hydr2', else, HydroSatellite=ProcessingSatellite; end ; 
+if Both==1, HydroSatellite='Hydr1&Hydr2'; else, HydroSatellite=ProcessingSatellite; end ; 
 text(indent,vert, ['\fontsize{10} Sat: ' char(HydroSatellite) '. Reference: ' char(RefSatellite) '. Time period: ' char(init_SM_Day) ' to ' char(final_SM_Day)] )
 % ii=0;
 finpage=4*(pageID-1)+4 ; if finpage> dayOK, finpage=dayOK ; end 
