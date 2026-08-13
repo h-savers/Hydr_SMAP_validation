@@ -61,7 +61,7 @@ prompt={    'First day to compare [YYYY-MM-DDThh:mm]: ', ...
             'Last day to compare [YYYY-MM-DDThh:mm]: ', ...
             'Reference MW radiometer product [SMAP/SMA09/SMOS]: ' ...
             'HydroGNSS product level [L2G/L3]: ',...
-            'HydroGNSS satellite [HydroGNSS-1/HydroGNSS-2]: ', ...
+            'HydroGNSS satellite [HydroGNSS-1/HydroGNSS-2/Both]: ', ...
             'Save computer memory [Yes/No]: ',...
             'Size of reference data blocks [N. of pixels]: ',...
             'Quality flag of SMAP [Successfull/Recommended/none] or SMOS [NonNominal/none]: ', ...
@@ -196,7 +196,9 @@ end
 % startDate=startDate+hours(3) ;
 % numdays=ceil(juliandate(endDate)-juliandate(startDate)+1) ; %devo mettere +1 ???????RefSatellite
 numdays=ceil(juliandate(endDate)-juliandate(startDate)) ; %devo mettere +1 ???????
-
+% prepare case of both, uneffective for single satBoth=0 ; 
+if ProcessingSatellite=='Both' , Both=1; ProcessingSatellite='HydroGNSS-1' ; end 
+%
 %%%% find out HydroGNSS file folder and names for the specified time frame
 for ii=1:numdays
 timeproduct=startDate+ii-1 ; 
@@ -222,7 +224,29 @@ for kk=1:4
     L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % matrix [num of days x 4 six hour block per day] vector with full folder path of L2OP product files
 
     % end 
-end  % end loop on the 6 six hour bloch per day
+    if Both==1  % replicate lines for the four blocks for second satellite
+    ProcessingSatellite='HydroGNSS-2' ; 
+for kk=5:8
+    timeproductsix=timeproduct+hours((kk-1)*6) ; 
+    timeproduct_sixtot(ii, kk)=timeproductsix ; 
+    [tyear, tmonth, tday]=ymd(timeproductsix) ; 
+    [thour, tmin, tsec]=hms(timeproductsix) ;
+
+    six=6*fix(thour/6) ;
+    sixhour=char(string(six)) ; 
+        if tday< 10, charday=['0' char(string(tday))] ; else charday= char(string(tday)); end
+        if tmonth< 10, charmonth=['0' char(string(tmonth))] ; else charmonth= char(string(tmonth)); end
+
+        if six >= 12 
+        L2OPfoldername=[char(DataInputRootPath) '\' char(ProcessingSatellite) '\DataRelease\L2OP-SSM\' char(string(tyear)) '-' charmonth '\' charday '\H' sixhour '\'] ;
+        else
+        L2OPfoldername=[char(DataInputRootPath) '\' char(ProcessingSatellite) '\DataRelease\L2OP-SSM\' char(string(tyear)) '-' charmonth '\' charday '\H0' sixhour '\'] ;
+        end
+   % L2OPfolder_sixtot(ii+ii*(kk-1))=string(L2OPfoldername) ; % vector with full folder path of L2OP product files
+    L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % matrix [num of days x 4 six hour block per day] vector with full folder path of L2OP product files
+    end  % end for of 4 hour bkock second satellite 
+    end  % end if  Both=1 (2 satellites)
+end  % end loop on the 6 six hour bloch per day in case L2G
     case "L3"
     kk=1 ; 
     timeproductsix=timeproduct+hours((kk-1)*6) ; 
@@ -233,6 +257,19 @@ end  % end loop on the 6 six hour bloch per day
         if tmonth< 10, charmonth=['0' char(string(tmonth))] ; else charmonth= char(string(tmonth)); end
     L2OPfoldername=[char(DataInputRootPath) '\DataRelease\L3OP-SSM\' char(string(tyear)) '-' charmonth '\' charday '\'] ;
     L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % vector with full folder path of L2OP L3 product files
+
+    if Both==1 % replicate lines for the four blocks for second satellite
+    kk=2; 
+    ProcessingSatellite='HydroGNSS-2' ; 
+  timeproductsix=timeproduct+hours((kk-1)*6) ; 
+    timeproduct_sixtot(ii, kk)=timeproductsix ; 
+    [tyear, tmonth, tday]=ymd(timeproductsix) ; 
+    [thour, tmin, tsec]=hms(timeproductsix) ;
+        if tday< 10, charday=['0' char(string(tday))] ; else charday= char(string(tday)); end
+        if tmonth< 10, charmonth=['0' char(string(tmonth))] ; else charmonth= char(string(tmonth)); end
+    L2OPfoldername=[char(DataInputRootPath) '\DataRelease\L3OP-SSM\' char(string(tyear)) '-' charmonth '\' charday '\'] ;
+    L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % vector with full folder path of L2OP L3 product files
+    end
     end
 end  % % end loop on the days
 %
@@ -290,16 +327,31 @@ HydroSMtoplotLon=[] ;
 % identify days without HydroGNSS data
 ik=0 ; dayOKwithHydro=[] ; 
 for ij=1:numdays 
-
+switch Both
+    case 0
 if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij,2).ObservationUTCMidPointTime)>0 ...
         | length(L2OPdataOK(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,4).ObservationUTCMidPointTime)>0 
     ik=ik+1 ; dayOKwithHydro(ik)=ij ; 
 end
+    case 1
+if length(L2OPdataOK(ij,1).ObservationUTCMidPointTime)>0 |  length(L2OPdataOK(ij,2).ObservationUTCMidPointTime)>0 ...
+        | length(L2OPdataOK(ij,3).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,4).ObservationUTCMidPointTime)>0 ... 
+        | length(L2OPdataOK(ij,5).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,6).ObservationUTCMidPointTime)>0 ... 
+        | length(L2OPdataOK(ij,7).ObservationUTCMidPointTime)>0 | length(L2OPdataOK(ij,8).ObservationUTCMidPointTime)>0
+    ik=ik+1 ; dayOKwithHydro(ik)=ij ; 
 end
+end % end switch Both
+end % for on number of day
 %% Plot all HydroGNSS data
-HySSM=[]; HyLat=[]; HyLon=[]; for ii=1:dayOK, for kk=1:4, HySSM=[HySSM; L2OPdataOK(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOK(ii,kk).DataLatitude(:)]; HyLon=[HyLon; L2OPdataOK(ii,kk).DataLongitude(:)]; end, end
-good=find(isnan(HySSM)==0 & HyLat ~=0 & HyLon ~=0 ) ;
+[a b ]=size(L2OPdataOK) ; 
+HySSM=[]; HyLat=[]; HyLon=[]; HyUTC=[];
+for ii=1:dayOK, for kk=1:b, HySSM=[HySSM; L2OPdataOK(ii,kk).SoilMoisture(:)]; HyLat=[HyLat; L2OPdataOK(ii,kk).DataLatitude(:)];...
+            HyLon=[HyLon; L2OPdataOK(ii,kk).DataLongitude(:)];...
+            HyUTC=[HyUTC; L2OPdataOK(ii,kk).ObservationUTCMidPointTime(:)]; end, end
+% good=find(isnan(HySSM)==0 & HyLat ~=0 & HyLon ~=0 ) ;  % WARNING: HyLat/HyLon are 0 for track that have not the maximum lenght. We loose data with 0,0 which each no likely
+good=find(isnan(HySSM)==0 & ismissing(HyUTC)==0) ;
 HyLat=HyLat(good) ; HyLon= HyLon(good); HySSM=HySSM(good) ; 
+
 [column,row] = easeconv_grid3(HyLat, HyLon, 25) ; 
 A=[column, row] ; 
 [C, ia, ic]= unique(A, 'rows');
@@ -327,17 +379,17 @@ ylabel('\gamma(h)')
 title('HydroGNSS soil moisture semivariogram')
 grid on
 
-clear HyLat HyLon HySSM column row C ia ic A 
+clear HyLat HyLon HyUTC HySSM column row C ia ic A 
 %% end plot
 dayOKwithHydro=dayOKwithHydro' ; 
 dayOKwithSMAP=intersect(dayOKwithHydro, dayOKwithSMAP) ; 
 % prepare figure with SMAP/SMOS maps
 vvvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, [char(RefSatellite) ' SSM maps [%] (' SMAPQC ' flag)'])
+title(tt, [char(RefSatellite) ' SSM maps [%] (' char(SMAPQC) ' flag)'])
 %
 for ii=dayOKwithSMAP' 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% for L3 we should considere one single day 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% for L3 we should consider one single SMAP day 
 switch ProductLevel
     case "L2G" 
 SMAPSoilMoisture=[SMAP(ii,1).SoilMoisture_AM_REF(:); SMAP(ii,2).SoilMoisture_AM_REF(:); SMAP(ii,3).SoilMoisture_AM_REF(:) ;...
@@ -352,12 +404,15 @@ SMAPretrieval_qual_flag=[SMAP(ii,1).retrieval_qual_flag_AM_REF(:); SMAP(ii,2).re
     SMAP(ii,1).retrieval_qual_flag_PM_REF(:); SMAP(ii,2).retrieval_qual_flag_PM_REF(:); SMAP(ii,3).retrieval_qual_flag_PM_REF(:) ] ;
 
 % clear SMAP
-
-HydroSoilMoisture=[L2OPdataOK(ii,1).SoilMoisture(:); L2OPdataOK(ii,2).SoilMoisture(:);L2OPdataOK(ii,3).SoilMoisture(:);L2OPdataOK(ii,4).SoilMoisture(:)] ;
-HydroTime=[L2OPdataOK(ii,1).ObservationUTCMidPointTime(:); L2OPdataOK(ii,2).ObservationUTCMidPointTime(:);L2OPdataOK(ii,3).ObservationUTCMidPointTime(:);L2OPdataOK(ii,4).ObservationUTCMidPointTime(:)] ;
-HydroLat=[L2OPdataOK(ii,1).DataLatitude(:); L2OPdataOK(ii,2).DataLatitude(:);L2OPdataOK(ii,3).DataLatitude(:);L2OPdataOK(ii,4).DataLatitude(:)] ;
-HydroLon=[L2OPdataOK(ii,1).DataLongitude(:); L2OPdataOK(ii,2).DataLongitude(:);L2OPdataOK(ii,3).DataLongitude(:);L2OPdataOK(ii,4).DataLongitude(:)] ;
-HydroSSMQuality=[L2OPdataOK(ii,1).SSMQuality(:); L2OPdataOK(ii,2).SSMQuality(:);L2OPdataOK(ii,3).SSMQuality(:);L2OPdataOK(ii,4).SSMQuality(:)] ;
+[a b]=size(L2OPdataOK) ;
+HydroSoilMoisture=[] ; HydroTime=[]; HydroLat=[] ; HydroLon=[]; HydroSSMQuality=[] ;
+for kk=1:b 
+HydroSoilMoisture=[HydroSoilMoisture; L2OPdataOK(ii,kk).SoilMoisture(:)]; 
+HydroTime=[HydroTime; L2OPdataOK(ii,kk).ObservationUTCMidPointTime(:)]; 
+HydroLat=[HydroLat; L2OPdataOK(ii,kk).DataLatitude(:)] ; 
+HydroLon=[HydroLon; L2OPdataOK(ii,kk).DataLongitude(:)]; 
+HydroSSMQuality=[HydroSSMQuality; L2OPdataOK(ii,kk).SSMQuality(:)]; 
+end
 % clear L2OPdataOK
     
     case "L3"
@@ -367,11 +422,15 @@ SMAPLatitude=[SMAP(ii,2).latitude_AM(:); SMAP(ii,2).latitude_PM(:)] ;
 SMAPLongitude=[SMAP(ii,2).longitude_AM(:); SMAP(ii,2).longitude_PM(:)] ;
 SMAPretrieval_qual_flag=[SMAP(ii,2).retrieval_qual_flag_AM_REF(:); SMAP(ii,2).retrieval_qual_flag_PM_REF(:)]; 
 
-HydroSoilMoisture=L2OPdataOK(ii,1).SoilMoisture(:) ;
-HydroTime=L2OPdataOK(ii,1).ObservationUTCMidPointTime(:) ;
-HydroLat=L2OPdataOK(ii,1).DataLatitude(:); 
-HydroLon=L2OPdataOK(ii,1).DataLongitude(:);
-HydroSSMQuality=L2OPdataOK(ii,1).SSMQuality(:); 
+[a b]=size(L2OPdataOK) ;
+HydroSoilMoisture=[] ; HydroTime=[]; HydroLat=[] ; HydroLon=[]; HydroSSMQuality=[] ;
+for kk=1:b 
+HydroSoilMoisture=[HydroSoilMoisture; L2OPdataOK(ii,kk).SoilMoisture(:)]; 
+HydroTime=[HydroTime; L2OPdataOK(ii,kk).ObservationUTCMidPointTime(:)]; 
+HydroLat=[HydroLat; L2OPdataOK(ii,kk).DataLatitude(:)] ; 
+HydroLon=[HydroLon; L2OPdataOK(ii,kk).DataLongitude(:)]; 
+HydroSSMQuality=[HydroSSMQuality; L2OPdataOK(ii,kk).SSMQuality(:)]; 
+end
 
 end
 
@@ -602,7 +661,8 @@ sizefontLarge=15 ;
 sizefontSmall=12 ;
 text(indent,vert, ['\fontsize{12} SSM QC report on ' char(datetime)] ) ; 
 vert=vert-3 ; 
-text(indent,vert, ['\fontsize{10} Reference:' char(RefSatellite) '. Time period: ' init_SM_Day ' to ' final_SM_Day] )
+if Both==1, HydroSatellite='Hydr1&Hydr2', else, HydroSatellite=ProcessingSatellite; end ; 
+text(indent,vert, ['\fontsize{10} Sat: ' char(HydroSatellite) '. Reference: ' char(RefSatellite) '. Time period: ' char(init_SM_Day) ' to ' char(final_SM_Day)] )
 % ii=0;
 finpage=4*(pageID-1)+4 ; if finpage> dayOK, finpage=dayOK ; end 
 for ik=dayOKwithSMAP(4*(pageID-1)+1:finpage)'
@@ -636,10 +696,10 @@ end
 % reportName=['HydroGNSSQCreport' ProcessingSatellite(1) ProcessingSatellite(11) '_' init_SM_Day(9:10) '-' init_SM_Day(6:7) 'to' final_SM_Day(9:10) '-' final_SM_Day(6:7) '_' extractAfter(DataInputRootPath, 'SapienzaProducts_')] ;
 % reportfile=[char(ReportFolder) '\' reportName '.pdf'] ;
 
-reportfile=[char(ReportFolder) '\HydroGNSSQCreport_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
+reportfile=[char(ReportFolder) '\HydroGNSSQCreport-' char(HydroSatellite) '_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
 
 Title=['SSM QC report: HydroGNSS vs ' char(RefSatellite)] ;
-str1=['Time of issue: ' char(datetime) '. Reference: ' char(RefSatellite)] ; 
+str1=['Time of issue: ' char(datetime) '. Sat;' char(HydroSatellite) '. Reference: ' char(RefSatellite)] ; 
 str11= ['First day: ' char(init_SM_Day) '. Final day: ' char(final_SM_Day)] ;
 % C = {} ;
 C = {Title, str1, str11} ;

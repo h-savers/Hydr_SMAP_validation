@@ -1,5 +1,6 @@
 function [vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L2G(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID, ProcessingSatellite)
 L2OPfilename='L2OP-SSM.nc' ; 
+[a b]=size(L2OPfolder_sixtot) ; 
 count_sixhour=0 ; 
 count_day=0 ; 
 vv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
@@ -7,7 +8,7 @@ t=tiledlayout('flow') ;
 title(t,[ProcessingSatellite ' L2G SSM maps'])
 for ii=1:numdays
     mm=0 ; 
-    for kk=1:4
+    for kk=1:b
 
 %             icount=ii+ii*(kk-1) ; 
 % icount=kk ; 
