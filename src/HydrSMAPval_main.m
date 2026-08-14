@@ -665,7 +665,7 @@ sizefontSmall=12 ;
 text(indent,vert, ['\fontsize{12} SSM QC report on ' char(datetime)] ) ; 
 vert=vert-3 ; 
 if Both==1, HydroSatellite='Hydr1&Hydr2'; else, HydroSatellite=ProcessingSatellite; end ; 
-text(indent,vert, ['\fontsize{10} Sat: ' char(HydroSatellite) '. Reference: ' char(RefSatellite) '. Time period: ' char(init_SM_Day) ' to ' char(final_SM_Day)] )
+text(indent,vert, ['\fontsize{10} Lev: ' char(ProductLevel) '. Sat: ' char(HydroSatellite) '. Reference: ' char(RefSatellite) '. Time period: ' char(init_SM_Day) ' to ' char(final_SM_Day)] )
 % ii=0;
 finpage=4*(pageID-1)+4 ; if finpage> dayOK, finpage=dayOK ; end 
 for ik=dayOKwithSMAP(4*(pageID-1)+1:finpage)'
@@ -702,7 +702,7 @@ end
 reportfile=[char(ReportFolder) '\HydroGNSSQCreport-' char(HydroSatellite) '_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
 
 Title=['SSM QC report: HydroGNSS vs ' char(RefSatellite)] ;
-str1=['Time of issue: ' char(datetime) '. Sat;' char(HydroSatellite) '. Reference: ' char(RefSatellite)] ; 
+str1=['Time of issue: ' char(datetime) '. Lev: ' char(ProductLevel) '. Sat;' char(HydroSatellite) '. Reference: ' char(RefSatellite)] ; 
 str11= ['First day: ' char(init_SM_Day) '. Final day: ' char(final_SM_Day)] ;
 % C = {} ;
 C = {Title, str1, str11} ;
