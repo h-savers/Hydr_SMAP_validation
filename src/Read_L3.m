@@ -1,6 +1,6 @@
 function [vv, timeproduct_sixtotOK, L3OPdataOK, DateOK] = Read_L3(numdays, L3OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID)
 L3OPfilename='L3OP-SSM.nc' ; 
-[a b]=size(L2OPfolder_sixtot) ; 
+[a b]=size(L3OPfolder_sixtot) ; 
 % count_sixhour=0 ; 
 count_day=0 ; 
 vv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;

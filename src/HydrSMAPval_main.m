@@ -198,7 +198,8 @@ end
 numdays=ceil(juliandate(endDate)-juliandate(startDate)) ; %devo mettere +1 ???????
 % prepare case of both, uneffective for single sat
 Both=0 ; 
-if ProcessingSatellite=='Both' , Both=1; ProcessingSatellite='HydroGNSS-1' ; end 
+% if ProcessingSatellite=='Both' , Both=1; ProcessingSatellite='HydroGNSS-1' ; end 
+if ProcessingSatellite=='Both' , Both=1; end 
 %
 %%%% find out HydroGNSS file folder and names for the specified time frame
 for ii=1:numdays
@@ -260,18 +261,18 @@ for kk=5:8
     L2OPfoldername=[char(DataInputRootPath) '\DataRelease\L3OP-SSM\' char(string(tyear)) '-' charmonth '\' charday '\'] ;
     L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % vector with full folder path of L2OP L3 product files
 
-    if Both==1 % replicate lines for the four blocks for second satellite
-    kk=2; 
-    ProcessingSatellite='HydroGNSS-2' ; 
-  timeproductsix=timeproduct+hours((kk-1)*6) ; 
-    timeproduct_sixtot(ii, kk)=timeproductsix ; 
-    [tyear, tmonth, tday]=ymd(timeproductsix) ; 
-    [thour, tmin, tsec]=hms(timeproductsix) ;
-        if tday< 10, charday=['0' char(string(tday))] ; else charday= char(string(tday)); end
-        if tmonth< 10, charmonth=['0' char(string(tmonth))] ; else charmonth= char(string(tmonth)); end
-    L2OPfoldername=[char(DataInputRootPath) '\DataRelease\L3OP-SSM\' char(string(tyear)) '-' charmonth '\' charday '\'] ;
-    L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % vector with full folder path of L2OP L3 product files
-    end
+%     if Both==1 % replicate lines for the four blocks for second satellite
+%     kk=2; 
+%     % ProcessingSatellite='HydroGNSS-2' ; 
+%   timeproductsix=timeproduct+hours((kk-1)*6) ; 
+%     timeproduct_sixtot(ii, kk)=timeproductsix ; 
+%     [tyear, tmonth, tday]=ymd(timeproductsix) ; 
+%     [thour, tmin, tsec]=hms(timeproductsix) ;
+%         if tday< 10, charday=['0' char(string(tday))] ; else charday= char(string(tday)); end
+%         if tmonth< 10, charmonth=['0' char(string(tmonth))] ; else charmonth= char(string(tmonth)); end
+%     L2OPfoldername=[char(DataInputRootPath) '\DataRelease\L3OP-SSM\' char(string(tyear)) '-' charmonth '\' charday '\'] ;
+%     L2OPfolder_sixtot(ii, kk)=string(L2OPfoldername) ; % vector with full folder path of L2OP L3 product files
+%     end
     end
 end  % % end loop on the days
 %
@@ -559,7 +560,7 @@ pluto=SMAPSMtoplot_perc(ik,1:HydroGNSSnumber(ik)) ;
 SMAPSMtoplot_percTOT=[SMAPSMtoplot_percTOT pluto] ; 
 % corrcoe(ii)=corrcoef(HydroSMtoplot(ii,1:HydroGNSSnumber(ii)), SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii))) ; 
 R=corrcoef(pippo(noerrornan), pluto(noerrornan)) ; 
-corrcoe(ii)=R(1,2) ; 
+if length(error) >=2, corrcoe(ii)=R(1,2) ; else, corrcoe(ii)=-9999; end 
 corrcoe2(ii)=mean((pippo(noerrornan)-mean(pippo(noerrornan))).*(pluto(noerrornan)-mean(pluto(noerrornan))))./std(pluto(noerrornan))/std(pippo(noerrornan)) ;
 geoscatter(HydroSMtoplotLat(ik,noerrornan),HydroSMtoplotLon(ik,noerrornan), 30, error, 'filled')
 hold on

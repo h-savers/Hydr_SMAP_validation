@@ -56,6 +56,7 @@ varID=netcdf.inqVarID(mapNcids(itrk), 'MeanObservationUTCTime')  ;
 read=netcdf.getVar(mapNcids(itrk),varID)  ;
 %     for k=1:a 
 %     pippo=''; for i=1:30, pippo=[pippo, read(i,k)]; end  %%% !!!!!!!!To be fixed the L3 product
+if ischar(read)>0 , read=string(read') ; read=extractBefore(read, "   ") ; end 
 MeanObservationUTCTime(1:a,itrk)=read ; 
 %     MeanObservationUTCTime(k,itrk)=string(pippo) ; 
 %     end
