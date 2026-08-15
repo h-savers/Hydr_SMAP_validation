@@ -279,7 +279,8 @@ end  % % end loop on the days
    switch ProductLevel
    case "L2G"
 %%%%%%% Reading L2OP product for each six hour block and all days 
-[vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L2G(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID, ProcessingSatellite);
+if Both==1, HydroSatellite='Hydr1&Hydr2'; else, HydroSatellite=ProcessingSatellite; end ; 
+[vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L2G(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID, HydroSatellite);
 %% Fill structure L2OPdataOK with [] in case its size is less than 4 (i.e., the last six hour block never appeared
 [a b]=size(L2OPdataOK) ; for ii=b+1:4;  L2OPdataOK(1,ii).ObservationUTCMidPointTime=[] ; end
    case "L3"
