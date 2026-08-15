@@ -62,7 +62,7 @@ prompt={    'First day to compare [YYYY-MM-DDThh:mm]: ', ...
             'HydroGNSS satellite [HydroGNSS-1/HydroGNSS-2]: ', ...
             'Save computer memory [Yes/No]: ',...
             'Size of reference data blocks [N. of pixels]: ',...
-            'Quality flag of SMAP [Successfull/Recommended/none] or SMOS [NonNominal/none]: ', ...
+            'Quality flag of SMAP [Successfull/Recommended/none] or SMOS [NonNominal/none] or TRIPLE [Best/none]: ', ...
             'Folder to store M-files: ',...
             'Data Input RootPath: ',...
             'SMAP 36km RootPath: ',...
@@ -460,7 +460,7 @@ SMAPnonan = intersect(SMAPnonan,goodSuccessfull) ;
 elseif RefSatellite=="SMOS" & SMAPQC=="NonNominal"  % This sis for SMOS data
 goodRecommended=find(bitget(SMAPretrieval_qual_flag, 1)==0) ;
 SMAPnonan = intersect(SMAPnonan,goodRecommended) ; 
-elseif RefSatellite=="TRIPLE" & SMAPQC=="Recommended"
+elseif RefSatellite=="TRIPLE" & SMAPQC=="Best"
 goodRecommended=find(bitget(SMAPretrieval_qual_flag, 1)==0) ;
 SMAPnonan = intersect(SMAPnonan,goodRecommended) ; 
 goodRecommended=find(bitget(SMOSretrieval_qual_flag, 1)==0) ;
@@ -736,10 +736,10 @@ title('All day map of SSM errors (Reference minus HydroGNSS) [%]')
 ii=0 ;
 for ik=dayOKwithSMAP'
 ii=ii+1 ; 
-report1(ii)=string(['Percentage of retrievals in  HydroGNNS ' ProductLevel ' product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
-report2(ii)=string(['Percentage of NaN in  HydroGNNS ' ProductLevel ' product  = '       char(string(round(PercSMnan(ii),2))) ' %']) ;
-report3(ii)=string(['Percentage of HydroGNNS ' ProductLevel ' product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
-report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS ' ProductLevel ' Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
+report1(ii)=string(['Percentage of retrievals in  HydroGNNS ' char(ProductLevel) ' product = ' char(string(round(PercSMretrieve(ii),2))) ' %']) ; 
+report2(ii)=string(['Percentage of NaN in  HydroGNNS ' char(ProductLevel) ' product  = '       char(string(round(PercSMnan(ii),2))) ' %']) ;
+report3(ii)=string(['Percentage of HydroGNNS ' char(ProductLevel) ' product without reference colocation  = ' char(string(round(PercNoColocation(ii),2))) ' %']) ;
+report4(ii)=string(['Percentage of saturated (i.e., 0 or 50%) HydroGNNS ' char(ProductLevel) ' Soil Moisture  = ' char(string(round(PercNoSaturations(ii),2))) ' %']) ;
 report9(ii)=string(['Percentage of retrievals with optimal quality = '           char(string(round(PercSM_Flag1_good(ii),2))) ' %']) ;
 report5(ii)=string(['Root Mean Square Error  RMSE = '                      char(string(round(RMSE(ii),2))) ' %']) ;
 report6(ii)=string(['Unbiased Root Mean Square Error  UbRMSE = '           char(string(round(UbRMSE(ii),2))) ' %']) ;
@@ -872,8 +872,8 @@ ii=ii+1 ;
 str0=['Day ' char(string(ii)) ': '   char(DateOK(ik))] ; 
 str1 = ['        Number of colocations: ', char(string(NumberColocation(ik)))] ;
 str2 = ['        Percentage of SP with retrievals: ', char(string(round(PercSMretrieve(ik),2))) ' %'] ;
-str3 = ['        Percentage of HydroGNNS ' ProductLevel ' product without reference colocation: ',  char(string(round(PercNoColocation(ik),2))) ' %'] ;
-str4 = ['        Percentage of saturated (i.e., 0/50%) HydroGNNS ' ProductLevel ' Soil Moisture: ',  char(string(round(PercNoSaturations(ik),2))) ' %'] ;
+str3 = ['        Percentage of HydroGNNS ' char(ProductLevel) ' product without reference colocation: ',  char(string(round(PercNoColocation(ik),2))) ' %'] ;
+str4 = ['        Percentage of saturated (i.e., 0/50%) HydroGNNS ' char(ProductLevel) ' Soil Moisture: ',  char(string(round(PercNoSaturations(ik),2))) ' %'] ;
 str9 = ['        Percentage of retrievals with optimal quality: ',  char(string(round(PercSM_Flag1_good(ik),2))) ' %'] ;
 str5=['        Root mean square error:                  RMSE=' char(string(round(RMSE(ii),2))), ' m^3/m^3' ] ; 
 str6=['        Unbiased root mean square error:   UbRMSE=' char(string(round(UbRMSE(ii),2))), ' m^3/m^3' ] ; 
