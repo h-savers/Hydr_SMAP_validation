@@ -25,7 +25,7 @@ for ii=1:numdays
         geoscatter(L2OPdataOK(count_day,kk).DataLatitude(:), L2OPdataOK(count_day,kk).DataLongitude(:),[], L2OPdataOK(count_day,kk).SoilMoisture(:) )
         
         DateOK(count_day)=extractBefore(string(timeproduct_sixtot(ii,1)),' ') ; 
-        title(['Day ' char(extractBefore(string(timeproduct_sixtot(ii,1)),' ')) ' - Six hour block ' char(string(kk))])
+        title([char(extractBefore(string(timeproduct_sixtot(ii,1)),' ')) ' - Blk ' char(string(kk))])
         else
         disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: six hour block ' L2OPfolder ' file corrupted. Program continuing']) ; 
         fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: six hour block file corrupted . Program continuing']) ; 
