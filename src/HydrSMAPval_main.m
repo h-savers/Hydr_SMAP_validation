@@ -261,8 +261,9 @@ numdays=length(DateOK) ;
 
  elseif RefSatellite=="SMOS"
 % Identify SMOS product folders in the PDGS for day OK
- [dayOKwithSMOS, dayOKwithSMOS, SMOSfolderOK, SMOSfileOK_SD, SMOSfileOK_SA] = IdentifySMOSfolder(L2OPdataOK, timeproduct_sixtotOK, DynamicAuxiliarySMOSRootPath) ; 
-
+ [dayOKSMOS, dayOKwithSMOS, SMOSfolderOK, SMOSfileOK_SD, SMOSfileOK_SA] = IdentifySMOSfolder(L2OPdataOK, timeproduct_sixtotOK, DynamicAuxiliarySMOSRootPath) ; 
+ dayOKwithSMAP=dayOKwithSMOS ; 
+ dayOK=dayOKSMOS ; 
 %% read SMOS data
 %  SMAP = ReadSMOS(dayOKwithSMOS, SMOSfileOK_SD, SMOSfileOK_SA, SMOSfolderOK, pixelSMOS, lineSMOS); 
 %  dayOKwithSMAP=dayOKwithSMOS ; 
@@ -348,7 +349,7 @@ end
 % prepare figure with SMAP/SMOS maps
 vvvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, [char(RefSatellite) ' SSM maps [%] (' SMAPQC ' flag)'])
+title(tt, [char(RefSatellite) ' SSM maps [%] (' char(SMAPQC) ' flag)'])
 %
 if RefSatellite=="TRIPLE"
 
@@ -357,7 +358,7 @@ SMOSSMtripleTOT=[] ;
 HydroSMtripleTOT=[] ;
 trday=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, [char(RefSatellite) ' SSM maps [%] (' SMAPQC ' flag)'])
+title(tt, [char(RefSatellite) ' SSM maps [%] (' char(SMAPQC) ' flag)'])
 
 for ii=dayOKwithMWRAD' 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% for L3 we should considere one single day 
@@ -515,9 +516,9 @@ colorbar ;
 % % else
 % %     title(['Day ' char(extractBefore(string(SMAPTime(ii,1)),'T')) ])
 if RefSatellite=="SMAP" | RefSatellite=="SMAP09"
-    pos=find(char(SMAPfileOK(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMAPfileOK(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ]) ; 
+    pos=find(char(SMAPfileOK(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMAPfileOK(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ' +/- 1']) ; 
 else
-pos=find(char(SMOSfileOK_SA(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMOSfileOK_SA(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ]) ; 
+pos=find(char(SMOSfileOK_SA(ii,2))=='2') ; title(['Day ' char(insertAfter(insertAfter(extractBetween(char(SMOSfileOK_SA(ii,2)), pos(1), pos(1)+7),4, '-'), 7, '-')) ' +/- 1']) ; 
 end
 
 % % end
@@ -574,6 +575,8 @@ eps2_Y=sigma2_X*(corr_XZ^2/corr_YZ^2-corr_XY*corr_XZ/corr_YZ)+ sigma2_R ;
 
 eps2_Z=((corr_XY/corr_YZ-sigma2_R./sigma2_X/corr_XZ).^2-corr_XY*corr_XZ/corr_YZ)*sigma2_X + sigma2_R ;
 
+eps2_X(find(eps2_X<0))=0 ; eps2_Y(find(eps2_Y<0))=0 ;eps2_Z(find(eps2_Z<0))=0 ; 
+
 % figure, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
 % plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
 % legend('Err. std. SMAP', 'Err. std. SMOS', 'Err. std. HydroGNSS')
@@ -607,9 +610,9 @@ ylim([0,10])
 title(['TC for different r^2. ' ProcessingSatellite ', day ' char(DateOK(ii))])
 %
 end  % end look on number of days
-else
-disp('only TRIPLE option enabled') ; return
-end % end of if for TRIPLE option, the only option enable in the script
+% else
+% disp('only TRIPLE option enabled') ; return
+% end % end of if for TRIPLE option, the only option enable in the script
 %%%%%%%%%%%%%%%%  compute triple usinf total colocates dataset
 nonzero=find(HydroSMtripleTOT ~= 0 & HydroSMtripleTOT ~= 5) ; 
 
@@ -627,11 +630,13 @@ corr_YZ=corrcoef(SMOSSMtripleTOT, HydroSMtripleTOT) ; corr_YZ=corr_YZ(1,2) ;
 % corr_XZ=corrcoef(SMOSSMtripleTOT, HydroSMtripleTOT) ; corr_XZ=corr_XZ(1,2) ;  
 % corr_YZ=corrcoef(SMAPSMtripleTOT, HydroSMtripleTOT) ; corr_YZ=corr_YZ(1,2) ; 
 
-eps2_X=sigma2_X*(1-corr_XY*corr_XZ/corr_YZ) + sigma2_R ;
+eps2_X=sigma2_X*(1-corr_XY*corr_XZ/corr_YZ) + sigma2_R ; 
 
 eps2_Y=sigma2_X*(corr_XZ^2/corr_YZ^2-corr_XY*corr_XZ/corr_YZ)+ sigma2_R ;
 
 eps2_Z=((corr_XY/corr_YZ-sigma2_R./sigma2_X/corr_XZ).^2-corr_XY*corr_XZ/corr_YZ)*sigma2_X + sigma2_R ;
+
+eps2_X(find(eps2_X<0))=0 ; eps2_Y(find(eps2_Y<0))=0 ;eps2_Z(find(eps2_Z<0))=0 ; 
 
 % figure, plot(sqrt(sigma2_R), sqrt(eps2_X), '.'); hold on
 % plot(sqrt(sigma2_R), sqrt(eps2_Y), '.r'); plot(sqrt(sigma2_R), sqrt(eps2_Z), '.g'); 
@@ -647,7 +652,7 @@ disp(['Error standard deviation r^2=' char(string(sigma2_R(10))) ' : SMAP=' char
 
 trday2=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, ['TRIPLE COLLOCATION. ' ProcessingSatellite ', days ' char(DateOK(1)) ' to ' char(DateOK(end))]) 
+title(tt, ['TRIPLE COLLOCATION. ' char(ProcessingSatellite) ', days ' char(DateOK(1)) ' to ' char(DateOK(end))]) 
 figure(trday2)
 nexttile, plot(HydroSMtripleTOT/100,SMAPSMtripleTOT/100, '.' )
 hold on, plot(HydroSMtripleTOT/100, SMOSSMtripleTOT/100, '.r')
@@ -668,7 +673,7 @@ title('TP errors vs r^2')
 %%%%%%%%%%%%%%%%   Other plot
 trday3=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 tt=tiledlayout('flow') ; 
-title(tt, ['TRIPLE COLLOCATION. ' ProcessingSatellite ', days ' char(DateOK(1)) ' to ' char(DateOK(end))]) 
+title(tt, ['TRIPLE COLLOCATION. ' char(ProcessingSatellite) ', days ' char(DateOK(1)) ' to ' char(DateOK(end))]) 
 figure(trday3)
 nexttile, plot(HydroSMtripleTOT/100,SMAPSMtripleTOT/100, '.' )
 xlim([0,0.6]) ; ylim([0,0.6]) ; 
@@ -689,11 +694,7 @@ ylabel('Error std. [%]')
 ylim([0,10])
 title('TP errors vs r^2')
 %%%%%%%%%%%%%%%%%
-
-
-
-
-
+else % case of single reference, no TRIPLE
 
 SMAPSMtoplot_perc=100.*SMAPSMtoplot ; 
 SMOSSMtoplot_perc=100.*SMOSSMtoplot ; 
@@ -932,5 +933,5 @@ exportgraphics(vvvv,reportfile, 'Append', true) ;
 
 % waitbar(1,f, 'End of program');
 % close(f) ;
-
+end % end if of Reference satellite equal to TRIPLE
 end
