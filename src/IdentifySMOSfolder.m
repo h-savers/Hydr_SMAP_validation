@@ -87,4 +87,5 @@ SMOSfolderOK(ii,3)=string([char(DynamicAuxiliarySMOSRootPath) '\' char(string(ty
 end
 
 dayOKwithSMOS=dayOKwithSMOS(find(dayOKwithSMOS>0)) ;
+dayOK=length(dayOKwithSMOS) ;
 end

@@ -1,5 +1,6 @@
 function [vv, timeproduct_sixtotOK, L2OPdataOK, DateOK] = Read_L2G(numdays, L2OPfolder_sixtot, timeproduct_sixtot, ProductLevel, logfileID, ProcessingSatellite)
 L2OPfilename='L2OP-SSM.nc' ; 
+[a b]=size(L2OPfolder_sixtot) ; 
 count_sixhour=0 ; 
 count_day=0 ; 
 vv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
@@ -7,7 +8,7 @@ t=tiledlayout('flow') ;
 title(t,[ProcessingSatellite ' L2G SSM maps'])
 for ii=1:numdays
     mm=0 ; 
-    for kk=1:4
+    for kk=1:b
 
 %             icount=ii+ii*(kk-1) ; 
 % icount=kk ; 
@@ -24,7 +25,7 @@ for ii=1:numdays
         geoscatter(L2OPdataOK(count_day,kk).DataLatitude(:), L2OPdataOK(count_day,kk).DataLongitude(:),[], L2OPdataOK(count_day,kk).SoilMoisture(:) )
         
         DateOK(count_day)=extractBefore(string(timeproduct_sixtot(ii,1)),' ') ; 
-        title(['Day ' char(extractBefore(string(timeproduct_sixtot(ii,1)),' ')) ' - Six hour block ' char(string(kk))])
+        title([char(extractBefore(string(timeproduct_sixtot(ii,1)),' ')) ' - Blk ' char(string(kk))])
         else
         disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: six hour block ' L2OPfolder ' file corrupted. Program continuing']) ; 
         fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' WARNING: six hour block file corrupted . Program continuing']) ; 
