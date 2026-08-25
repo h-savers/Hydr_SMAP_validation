@@ -199,7 +199,7 @@ numdays=ceil(juliandate(endDate)-juliandate(startDate)) ; %devo mettere +1 ?????
 % prepare case of both, uneffective for single sat
 Both=0 ; 
 % if ProcessingSatellite=='Both' , Both=1; ProcessingSatellite='HydroGNSS-1' ; end 
-if ProcessingSatellite=='Both' , Both=1; end 
+if ProcessingSatellite=="Both" , Both=1; end 
 %
 %%%% find out HydroGNSS file folder and names for the specified time frame
 for ii=1:numdays
