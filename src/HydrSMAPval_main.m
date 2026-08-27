@@ -571,7 +571,7 @@ clear SMAP
 
 c=colorbar('southoutside') ; 
 c.LimitsMode='manual'; c.Limits=[-10, 10]; colormap(turbo); c.Label.String = 'SSM error [%]';
-title('All day map of SSM errors (Reference minus HydroGNSS) [%]')
+title(['All day map of SSM ' RefSatellite ' errors (Reference minus HydroGNSS) [%]'])
 %%% end of computation and plot of figure with map of errors
 ii=0 ;
 for ik=dayOKwithSMAP'
