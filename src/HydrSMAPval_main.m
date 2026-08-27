@@ -199,7 +199,7 @@ numdays=ceil(juliandate(endDate)-juliandate(startDate)) ; %devo mettere +1 ?????
 % prepare case of both, uneffective for single sat
 Both=0 ; 
 % if ProcessingSatellite=='Both' , Both=1; ProcessingSatellite='HydroGNSS-1' ; end 
-if ProcessingSatellite=='Both' , Both=1; end 
+if ProcessingSatellite=="Both" , Both=1; end 
 %
 %%%% find out HydroGNSS file folder and names for the specified time frame
 for ii=1:numdays
@@ -466,7 +466,7 @@ SMAPTime(contains(SMAPTime, "N/A")==1)="NaT" ;  % needed as the first element of
 % SMAPnonan=find(SMAPSoilMoisture ~= -9999 & isnan(SMAPSoilMoisture)==0 & datetime(SMAPTime, 'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss.SSS') > min(datetime(HydroTime))- ThresholdTimeDelay/24 ...
 %     & datetime(SMAPTime, 'InputFormat', 'yyyy-MM-dd''T''HH:mm:ss.SSS') < max(datetime(HydroTime))+ ThresholdTimeDelay/24) ;
 
-SMAPnonan=find(SMAPSoilMoisture ~= -9999 & isnan(SMAPSoilMoisture)==0 & datetime(SMAPTime) > min(datetime(HydroTime))- ThresholdTimeDelay/24 ...
+SMAPnonan=find(SMAPTime~= "NaT" & ismissing(SMAPTime)==0 & SMAPSoilMoisture ~= -9999 & isnan(SMAPSoilMoisture)==0 & datetime(SMAPTime) > min(datetime(HydroTime))- ThresholdTimeDelay/24 ...
     & datetime(SMAPTime) < max(datetime(HydroTime))+ ThresholdTimeDelay/24) ;
 
 if (RefSatellite=="SMAP" | RefSatellite=="SMAP09") &  SMAPQC=="Recommended" % This sis for SMAP data
