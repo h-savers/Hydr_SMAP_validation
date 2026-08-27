@@ -668,7 +668,7 @@ vert=vert-3 ;
 if Both==1, HydroSatellite='Hydr1&Hydr2'; else, HydroSatellite=ProcessingSatellite; end ; 
 text(indent,vert, ['\fontsize{10} Lev: ' char(ProductLevel) '. Sat: ' char(HydroSatellite) '. Reference: ' char(RefSatellite) '. Time period: ' char(init_SM_Day) ' to ' char(final_SM_Day)] )
 vert=vert-3 ;
-text(indent,vert, ['Data Input Folder: ' char(DataInputRootPath) ] )
+text(indent,vert, ['Product: ' char(DataInputRootPath) ] )
 % ii=0;
 finpage=4*(pageID-1)+4 ; if finpage> dayOK, finpage=dayOK ; end 
 for ik=dayOKwithSMAP(4*(pageID-1)+1:finpage)'
