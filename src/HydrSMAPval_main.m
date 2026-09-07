@@ -703,7 +703,10 @@ end
 % reportName=['HydroGNSSQCreport' ProcessingSatellite(1) ProcessingSatellite(11) '_' init_SM_Day(9:10) '-' init_SM_Day(6:7) 'to' final_SM_Day(9:10) '-' final_SM_Day(6:7) '_' extractAfter(DataInputRootPath, 'SapienzaProducts_')] ;
 % reportfile=[char(ReportFolder) '\' reportName '.pdf'] ;
 
-reportfile=[char(ReportFolder) '\HydroGNSSQCreport-' char(HydroSatellite) '_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
+% reportfile=[char(ReportFolder) '\HydroGNSSQCreport-' char(HydroSatellite) '_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
+reportfile = fullfile(ReportFolder, ...
+    ['HydroGNSSQCreport-' char(HydroSatellite) '_' ...
+     char(datetime('now','Format','yy-MM-dd_HH-mm-ss')) '.pdf'])
 
 Title=['SSM QC report: HydroGNSS vs ' char(RefSatellite)] ;
 str1=['Time of issue: ' char(datetime) '. Lev: ' char(ProductLevel) '. Sat;' char(HydroSatellite) '. Reference: ' char(RefSatellite)] ; 
@@ -767,10 +770,10 @@ if numpage>1
     exportgraphics(v(pageID),reportfile, 'Append', true) ;
     end
 end
-exportgraphics(vv,reportfile, 'Append', true) ;
-exportgraphics(vvv,reportfile, 'Append', true) ;
-exportgraphics(yy,reportfile, 'Append', true) ;
-exportgraphics(vvvv,reportfile, 'Append', true) ;
+exportgraphics(vv,reportfile, 'Append', true) ; pause(0.5);
+exportgraphics(vvv,reportfile, 'Append', true) ; pause(0.5);
+exportgraphics(yy,reportfile, 'Append', true) ; pause(0.5);
+exportgraphics(vvvv,reportfile, 'Append', true) ; pause(0.5);
 
  disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: End of program']) ; 
  fprintf(logfileID,[char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: End of program']) ; 
