@@ -1,4 +1,4 @@
-function HydrSMAPval_main(init_SM_Day,final_SM_Day, configurationPath)
+function structErrore=HydrSMAPval_main(init_SM_Day,final_SM_Day, configurationPath)
 
 close all
 clearvars -except init_SM_Day final_SM_Day configurationPath
@@ -10,7 +10,7 @@ pixelSMOS=1388 ;
 lineSMOS=584 ; 
 % NumLandCells=190127 ; % valid for EASE Grid 25 km removing snow/ice and water bodies
 NumLandCells=189821 ; % valid for EASE Grid 25 km removing also urban areas
-
+structErrore = struct ; 
 % f = waitbar(0,'QC-main running. Please wait...');
 
 ex=exist('configurationPath') ;
@@ -490,13 +490,16 @@ SMAPLatitude=SMAPLatitude(SMAPnonan) ;
 SMAPLongitude=SMAPLongitude(SMAPnonan) ;
 SMAPretrieval_qual_flag=SMAPretrieval_qual_flag(SMAPnonan) ;
 % clear SMAPnonan HydroSSMQuality Hydrononan DelayPoints SMAPtimeAll arclen pippo
-clear SMAPnonan HydroSSMQuality Hydrononan goodRecommended goodSuccessfull
+% clear SMAPnonan HydroSSMQuality Hydrononan goodRecommended goodSuccessfull
+HydroSSMQuality=HydroSSMQuality(Hydrononan) ;
+clear SMAPnonan Hydrononan goodRecommended goodSuccessfull
 
 [HydroPoints b]=size(HydroSoilMoisture)  ;
 SMAPSMtoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
 HydroSMtoplot(ii,1:HydroPoints)=NaN(1,HydroPoints) ;
 HydroSMtoplotLat(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
 HydroSMtoplotLon(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
+HydroSMtoplotQuality(ii,1:HydroPoints)=NaN(1,HydroPoints) ; 
 % [SMAPPoints b]=size(SMAPSoilMoisture)  ;
 HydroGNSSnumber(ii)=HydroPoints ; 
 disp([char(datetime('now','Format','yyyy-MM-dd HH:mm:ss')) ' INFO: selection of SMAP and HydroGNSS files on day ' char(string(ii)) ' to be colocated terminated. Program continuing']) ; 
@@ -530,7 +533,15 @@ SMAPSMtoplot(ii,1:HydroPoints)=SMAPSMtoplotii ;
 HydroSMtoplot(ii,1:HydroPoints)=HydroSMtoplotii ; 
 HydroSMtoplotLat(ii,1:HydroPoints)=HydroSMtoplotLatii ;
 HydroSMtoplotLon(ii,1:HydroPoints)=HydroSMtoplotLonii ; 
+HydroSMtoplotQuality(ii,1:HydroPoints)=HydroSSMQuality; 
 %
+errore=-HydroSMtoplotii+100*SMAPSMtoplotii;
+structErrore(ii).errore=errore;
+structErrore(ii).quality=HydroSSMQuality;
+errorenonan=errore(isnan(errore)==0) ;
+structErrore(ii).errorenonan=errorenonan;
+structErrore(ii).qualitynonan=HydroSSMQuality(isnan(errore)==0);
+structErrore(ii).nonan=find(isnan(errore)==0) ; 
 
 NumberColocation(ii)=length(find(isnan(HydroSMtoplot(ii,1:HydroPoints))==0)) ;
 PercNoColocation(ii)=100*size(find(isnan(HydroSMtoplot(ii,1:HydroPoints))==1),2)/HydroPoints ; % Percentage of HydroGNNS L2 product without SMAP colocation
@@ -550,7 +561,12 @@ ii=ii+1 ;
 error= SMAPSMtoplot_perc(ik,1:HydroGNSSnumber(ik))- HydroSMtoplot(ik,1:HydroGNSSnumber(ik)) ; 
 errorTOT=[errorTOT error] ;
 noerrornan=find(isnan(error)==0) ; 
+%%%% Add other filters based on SSMQUalityflags
+% use=find(bitget(structErrore(ii).quality, 17)==0) ;
+% noerrornan=intersect(noerrornan, use) ; 
+%%%% Add other filters based on SSMQUalityflags
 error=error(noerrornan) ; 
+% errorTOT=[errorTOT error] ;
 BIAS(ii)=mean(error) ; 
 UbRMSE(ii)=std(error) ;
 RMSE(ii)=sqrt(UbRMSE(ii)^2+BIAS(ii)^2) ; 
@@ -567,12 +583,18 @@ geoscatter(HydroSMtoplotLat(ik,noerrornan),HydroSMtoplotLon(ik,noerrornan), 30, 
 hold on
 ax2=gca ; 
 end
+
 clear SMAP
 
 c=colorbar('southoutside') ; 
 c.LimitsMode='manual'; c.Limits=[-10, 10]; colormap(turbo); c.Label.String = 'SSM error [%]';
 title(['All day map of SSM ' RefSatellite ' errors (Reference minus HydroGNSS) [%]'])
+
 %%% end of computation and plot of figure with map of errors
+figure, histogram(errorTOT(find(isnan(errorTOT)==0) ) );
+xlabel('SM error [%]'); xlim([-50 50])
+title('Hystogram of SM retrieval error (Reference minus HydroGNSS) [%] ')
+%%%
 ii=0 ;
 for ik=dayOKwithSMAP'
 ii=ii+1 ; 
@@ -751,7 +773,21 @@ str6=['        Unbiased root mean square error:   UbRMSE=' char(string(round(UbR
 str7=['        Bias:                                                 B=' char(string(round(BIAStot,2))), ' m^3/m^3' ] ; 
 str8=['        Correlation coefficient:                     R=' char(string(round(corrcoeTOT,2)))] ;
 C = [C {str0, str5, str6, str7, str8}] ; 
-%% print on screen 
+%% print on screen total sample statistics on a new page
+v(pageID+1)=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
+ax1 = axes('Position',[1.1 0. 0.1 0.1]); 
+xlim([0 10]) ;
+ylim([0 10]) ;
+vert=98 ;
+indent=-100 ;
+sizefontLarge=15 ;
+sizefontSmall=12 ;
+text(indent,vert, ['\fontsize{12} SSM QC report on ' char(datetime)] ) ; 
+vert=vert-3 ; 
+if Both==1, HydroSatellite='Hydr1&Hydr2'; else, HydroSatellite=ProcessingSatellite; end ; 
+text(indent,vert, ['\fontsize{10} Lev: ' char(ProductLevel) '. Sat: ' char(HydroSatellite) '. Reference: ' char(RefSatellite) '. Time period: ' char(init_SM_Day) ' to ' char(final_SM_Day)] )
+vert=vert-3 ;
+text(indent,vert, ['Product: ' char(DataInputRootPath) ],  'Interpreter', 'none' )
 vert=vert-4 ; 
 text(indent,vert, ['\fontsize{12} All days from ' char(DateOK(1)) ' to ' char(DateOK(end))] ) 
 vert=vert-2 ; 
@@ -762,7 +798,7 @@ vert=vert-2 ;
 text(indent+6.4,vert, ['\fontsize{10} Bias= ' char(string(round(BIAStot/100,3))) ' m^3/m^3 (' char(string(round(BIAStot,2))) ' %)'] ) 
 vert=vert-2 ; 
 text(indent+6.4,vert, ['\fontsize{10} R= ' char(string(round(corrcoeTOT,2)))] ) 
-%%
+%%%%%%%%%%%%%  end printing total sample statistics
 % ok = text2pdf(reportfile,C,0) ; 
 exportgraphics(v(1),reportfile) ;
 if numpage>1 

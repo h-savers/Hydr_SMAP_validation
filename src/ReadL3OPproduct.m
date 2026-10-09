@@ -48,7 +48,7 @@ varID=netcdf.inqVarID(mapNcids(itrk), 'DataMeanLongitude')  ;
 read=netcdf.getVar(mapNcids(itrk),varID)  ;
 DataMeanLongitude(1:a,itrk)=read ; 
 
-varID=netcdf.inqVarID(mapNcids(itrk), 'QualityFlag')  ;
+varID=netcdf.inqVarID(mapNcids(itrk), 'SSMQuality')  ;
 read=netcdf.getVar(mapNcids(itrk),varID)  ;
 QualityFlag(1:a,itrk)=read ; 
 
