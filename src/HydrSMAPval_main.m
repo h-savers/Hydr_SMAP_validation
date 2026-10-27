@@ -8,6 +8,8 @@ pixelSMAP09=3856 ;
 lineSMAP09=1624 ; 
 pixelSMOS=1388 ;
 lineSMOS=584 ; 
+% QC bit to remove in the validation performances
+BitToRemove= 17 ; 
 % NumLandCells=190127 ; % valid for EASE Grid 25 km removing snow/ice and water bodies
 NumLandCells=189821 ; % valid for EASE Grid 25 km removing also urban areas
 structErrore = struct ; 
@@ -550,7 +552,7 @@ PercNoSaturations(ii)=100*size(find(HydroSMtoplot(ii,1:HydroPoints)==0 | HydroSM
 end  % end look on number of days
 SMAPSMtoplot_perc=100.*SMAPSMtoplot ; 
 clear SMAPSMtoplot
-errorTOT=[] ; HydroSMtoplotTOT=[];  SMAPSMtoplot_percTOT=[] ;
+errorTOT=[] ; HydroSMtoplotTOT=[];  SMAPSMtoplot_percTOT=[] ; HydroSMtoplotQualityTOT=[] ; 
 %%% computation and plot of figure with map of errors
 vvvv=figure('Units', 'centimeters', 'Position', [0 0 21 29.7]) ;
 ax1 = axes('Position',[0 0 1 1]); ax1.TickDir='out' ; 
@@ -562,8 +564,10 @@ error= SMAPSMtoplot_perc(ik,1:HydroGNSSnumber(ik))- HydroSMtoplot(ik,1:HydroGNSS
 errorTOT=[errorTOT error] ;
 noerrornan=find(isnan(error)==0) ; 
 %%%% Add other filters based on SSMQUalityflags
-% use=find(bitget(structErrore(ii).quality, 17)==0) ;
-% noerrornan=intersect(noerrornan, use) ; 
+if BitToRemove >0 
+    use=find(bitget(structErrore(ii).quality, BitToRemove)==0) ;
+    noerrornan=intersect(noerrornan, use) ;
+end
 %%%% Add other filters based on SSMQUalityflags
 error=error(noerrornan) ; 
 % errorTOT=[errorTOT error] ;
@@ -575,6 +579,8 @@ pippo=HydroSMtoplot(ik,1:HydroGNSSnumber(ik)) ;
 HydroSMtoplotTOT=[HydroSMtoplotTOT pippo] ; 
 pluto=SMAPSMtoplot_perc(ik,1:HydroGNSSnumber(ik)) ; 
 SMAPSMtoplot_percTOT=[SMAPSMtoplot_percTOT pluto] ; 
+%
+HydroSMtoplotQualityTOT=[HydroSMtoplotQualityTOT,HydroSMtoplotQuality(ik,1:HydroGNSSnumber(ik))] ;
 % corrcoe(ii)=corrcoef(HydroSMtoplot(ii,1:HydroGNSSnumber(ii)), SMAPSMtoplot_perc(ii,1:HydroGNSSnumber(ii))) ; 
 R=corrcoef(pippo(noerrornan), pluto(noerrornan)) ; 
 if length(error) >=2, corrcoe(ii)=R(1,2) ; else, corrcoe(ii)=-9999; end 
@@ -587,7 +593,9 @@ end
 clear SMAP
 
 c=colorbar('southoutside') ; 
-c.LimitsMode='manual'; c.Limits=[-10, 10]; colormap(turbo); c.Label.String = 'SSM error [%]';
+% c.LimitsMode='manual'; c.Limits=[-10, 10]; colormap(turbo); c.Label.String = 'SSM error [%]';
+c.LimitsMode='auto'; colormap(turbo); c.Label.String = 'SSM error [%]';
+
 title(['All day map of SSM ' RefSatellite ' errors (Reference minus HydroGNSS) [%]'])
 
 %%% end of computation and plot of figure with map of errors
@@ -728,7 +736,7 @@ end
 % reportfile=[char(ReportFolder) '\HydroGNSSQCreport-' char(HydroSatellite) '_' char(datetime('now','Format','yy-MM-dd_HH-mm')) '.pdf'] ;
 reportfile = fullfile(ReportFolder, ...
     ['HydroGNSSQCreport-' char(HydroSatellite) '_' ...
-     char(datetime('now','Format','yy-MM-dd_HH-mm-ss')) '.pdf'])
+     char(datetime('now','Format','yy-MM-dd_HH-mm-ss')) '.pdf']) ;
 
 Title=['SSM QC report: HydroGNSS vs ' char(RefSatellite)] ;
 str1=['Time of issue: ' char(datetime) '. Lev: ' char(ProductLevel) '. Sat;' char(HydroSatellite) '. Reference: ' char(RefSatellite)] ; 
@@ -755,6 +763,12 @@ end
 
 % Compute and print overall statistics
 noerrornan=find(isnan(errorTOT)==0) ; 
+%% Select only one QC bit
+if BitToRemove>0
+    use=find(bitget(HydroSSMQuality, BitToRemove)==0) ;
+    noerrornan=intersect(noerrornan, use) ;
+end
+%%
 errorTOT=errorTOT(noerrornan) ; 
 BIAStot=mean(errorTOT) ; 
 UbRMSEtot=std(errorTOT) ;
@@ -802,7 +816,7 @@ text(indent+6.4,vert, ['\fontsize{10} R= ' char(string(round(corrcoeTOT,2)))] )
 % ok = text2pdf(reportfile,C,0) ; 
 exportgraphics(v(1),reportfile) ;
 if numpage>1 
-    for pageID=2:numpage 
+    for pageID=2:numpage+1 
     exportgraphics(v(pageID),reportfile, 'Append', true) ;
     end
 end
