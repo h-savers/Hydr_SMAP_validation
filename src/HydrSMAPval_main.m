@@ -9,7 +9,7 @@ lineSMAP09=1624 ;
 pixelSMOS=1388 ;
 lineSMOS=584 ; 
 % QC bit to remove in the validation performances
-BitToRemove= 17 ; 
+BitToRemove= 0 ; 
 % NumLandCells=190127 ; % valid for EASE Grid 25 km removing snow/ice and water bodies
 NumLandCells=189821 ; % valid for EASE Grid 25 km removing also urban areas
 structErrore = struct ; 
@@ -765,7 +765,7 @@ end
 noerrornan=find(isnan(errorTOT)==0) ; 
 %% Select only one QC bit
 if BitToRemove>0
-    use=find(bitget(HydroSSMQuality, BitToRemove)==0) ;
+    use=find(bitget(HydroSMtoplotQualityTOT, BitToRemove)==0) ; %% to be checked
     noerrornan=intersect(noerrornan, use) ;
 end
 %%
